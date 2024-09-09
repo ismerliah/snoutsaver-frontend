@@ -1,3 +1,3 @@
 # snoutsaver
 
-A new Flutter project.
+Snoutsaver-froentend
