@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snoutsaver/pages/SplashPage.dart';
+import 'package:snoutsaver/pages/splash_page.dart';
 
 void main() {
   runApp(const MainApp());
