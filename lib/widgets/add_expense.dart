@@ -4,15 +4,15 @@ import 'package:snoutsaver/mock_data.dart';
 import 'package:snoutsaver/models/category.dart';
 import 'package:snoutsaver/widgets/category_dialog.dart';
 
-class AddIncome extends StatefulWidget {
-  const AddIncome({super.key});
+class AddExpense extends StatefulWidget {
+  const AddExpense({super.key});
 
   @override
-  State<AddIncome> createState() => _AddIncomeState();
+  State<AddExpense> createState() => _AddExpenseState();
 }
 
-class _AddIncomeState extends State<AddIncome> {
-  
+class _AddExpenseState extends State<AddExpense> {
+
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
   IconData _selectedCategoryIcon = Icons.category_rounded;
@@ -60,7 +60,7 @@ class _AddIncomeState extends State<AddIncome> {
         },
       );
     }
-  
+    
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -82,21 +82,21 @@ class _AddIncomeState extends State<AddIncome> {
           ),
           const SizedBox(height: 24),
 
-          // Title: Add income
+          // Title: Add expense
           const Row(
             children: [
               CircleAvatar(
                 backgroundColor: Color(0xFF8ACDD7),
                 radius: 25,
                 child: Icon(
-                  Icons.arrow_downward_rounded,
+                  Icons.arrow_upward_rounded,
                   color: Colors.white,
                   size: 30,
                 ),
               ),
               SizedBox(width: 16),
               Text(
-                'Add income',
+                'Add expense',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -138,7 +138,7 @@ class _AddIncomeState extends State<AddIncome> {
             controller: _categoryController,
             readOnly: true,
             onTap: () {
-              _selectCategory(context, incomeCategories);
+              _selectCategory(context, expenseCategories);
             },
             decoration: InputDecoration(
               labelText: 'Category',
