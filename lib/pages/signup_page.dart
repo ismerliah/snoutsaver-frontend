@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:snoutsaver/pages/home_page.dart';
 import 'package:snoutsaver/pages/signin_page.dart';
 
 class SignupPage extends StatefulWidget {
@@ -20,32 +21,52 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final TextEditingController _confirmPassword = TextEditingController();
+  String errorMessage = '';
 
   Future<void> signUp() async {
+    setState(() {
+      errorMessage = '';
+    });
     if (_formkey.currentState!.validate()) {
       var response = await http.post(
         Uri.parse("http://10.0.2.2:8000/users/create"),
-        // headers: {
-        //   'Content-Type': 'application/json',
-        // },
-        body: {
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(<String, dynamic>{
           "username": _username.text,
           "email": _email.text,
           "password": _password.text,
           "confirm_password": _confirmPassword.text,
-        },
+        }),
       );
 
       if (response.statusCode == 200) {
-        final scaffoldContext = context;
-        ScaffoldMessenger.of(scaffoldContext).showSnackBar(const SnackBar(
-          content: Text("Post created successfully!"),
-        ));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      } else if (response.statusCode == 400) {
+        // Handle the error response
+        final Map<String, dynamic> result = jsonDecode(response.body);
+
+        setState(() {
+          if (result['detail'] == "Username already exists") {
+            errorMessage = "Username already exists";
+          } else if (result['detail'] == "Email already exists") {
+            errorMessage = "Email already exists";
+          } else if (result['detail'] == "Passwords do not match") {
+            errorMessage = "Passwords do not match";
+          }
+        });
+
+        // Re-validate form to display error messages
+        _formkey.currentState!.validate();
       } else {
-        final scaffoldContext = context;
-        ScaffoldMessenger.of(scaffoldContext).showSnackBar(SnackBar(
-          content: Text(response.statusCode.toString()),
-        ));
+        // Handle other status codes (e.g., 500 or network error)
+        setState(() {
+          errorMessage = "Failed to sign up. Please try again later.";
+        });
       }
     }
   }
@@ -80,15 +101,20 @@ class _SignupPageState extends State<SignupPage> {
                       ],
                     ),
                   ),
-              
+
                   // Username
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: _username,
-                      validator: MultiValidator([
-                        RequiredValidator(errorText: '* Required'),
-                      ]).call,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return '* Required';
+                        } else if (errorMessage == 'Username already exists') {
+                          return 'Username already exists';
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                         hintText: 'Username',
                         hintStyle: const TextStyle(
@@ -113,16 +139,31 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                   ),
-              
+
                   // Email
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: _email,
-                      validator: MultiValidator([
-                        RequiredValidator(errorText: '* Required'),
-                        EmailValidator(errorText: 'Enter a valid email address'),
-                      ]).call,
+                      validator: (value) {
+                        // Email validation
+                        final emailValidator = MultiValidator([
+                          RequiredValidator(errorText: '* Required'),
+                          EmailValidator(
+                              errorText: 'Enter a valid email address'),
+                        ]);
+
+                        final emailValidationResult =
+                            emailValidator.call(value);
+                        if (emailValidationResult != null) {
+                          return emailValidationResult;
+                        }
+
+                        if (errorMessage == 'Email already exists') {
+                          return 'Email already exists';
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                         hintText: 'Email',
                         hintStyle: const TextStyle(
@@ -147,18 +188,29 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                   ),
-              
+
                   // Password
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: _password,
                       obscureText: !_isPasswordVisible,
-                      validator: MultiValidator([
-                        RequiredValidator(errorText: '* Required'),
-                        MinLengthValidator(8,
-                            errorText: 'Password must be at least 8 characters'),
-                      ]).call,
+                      validator: (value) {
+                        // Password validation
+                        final passwordValidator = MultiValidator([
+                          RequiredValidator(errorText: '* Required'),
+                          MinLengthValidator(8,
+                              errorText:
+                                  'Password must be at least 8 characters'),
+                        ]);
+
+                        final passwordValidationResult =
+                            passwordValidator.call(value);
+                        if (passwordValidationResult != null) {
+                          return passwordValidationResult;
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                         hintText: 'Password',
                         hintStyle: const TextStyle(
@@ -194,18 +246,32 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                   ),
-              
+
                   // Confirm Password
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: _confirmPassword,
                       obscureText: !_isConfirmPasswordVisible,
-                      validator: MultiValidator([
-                        RequiredValidator(errorText: '* Required'),
-                        MinLengthValidator(8,
-                            errorText: 'Password must be at least 8 characters'),
-                      ]).call,
+                      validator: (value) {
+                        // Password validation
+                        final passwordValidator = MultiValidator([
+                          RequiredValidator(errorText: '* Required'),
+                          MinLengthValidator(8,
+                              errorText:
+                                  'Password must be at least 8 characters'),
+                        ]);
+
+                        final passwordValidationResult =
+                            passwordValidator.call(value);
+                        if (passwordValidationResult != null) {
+                          return passwordValidationResult;
+                        } else if (errorMessage == 'Passwords do not match') {
+                          return 'Passwords do not match';
+                        }
+
+                        return null;
+                      },
                       decoration: InputDecoration(
                         hintText: 'Confirm Password',
                         hintStyle: const TextStyle(
@@ -234,14 +300,15 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                           onPressed: () {
                             setState(() {
-                              _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                              _isConfirmPasswordVisible =
+                                  !_isConfirmPasswordVisible;
                             });
                           },
                         ),
                       ),
                     ),
                   ),
-              
+
                   // Sign up button
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -267,7 +334,7 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                   ),
-              
+
                   // Forgot password
                   // Row(
                   //   mainAxisAlignment: MainAxisAlignment.end,
@@ -296,7 +363,8 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          Navigator.of(context)
+                              .pushReplacement(MaterialPageRoute(
                             builder: (_) => const SigninPage(),
                           ));
                         },
@@ -311,7 +379,7 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                       ),
                     ],
-                  ),
+                  )
                 ],
               ),
             ),
