@@ -15,6 +15,7 @@ dependencies:
   step_progress_indicator: ^1.0.2
   google_fonts: ^6.2.0
   http: ^1.2.2
+  dio: ^5.7.0
 
 dev_dependencies:
   flutter_test:
