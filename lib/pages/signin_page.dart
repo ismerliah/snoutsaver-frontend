@@ -1,8 +1,11 @@
-import 'package:dio/dio.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:snoutsaver/pages/home_page.dart';
 import 'package:snoutsaver/pages/signup_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 class SigninPage extends StatefulWidget {
   const SigninPage({super.key});
@@ -17,22 +20,57 @@ class _SigninPageState extends State<SigninPage> {
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
 
-  Future<void> _signIn() async {
-    if (_formkey.currentState!.validate()) {
-      var dio = Dio();
+  final storage = const FlutterSecureStorage();
 
-      var response = await dio.get('http://localhost:8000/users/');
+  Future<String?> createToken(String username, String password) async {
+  try {
+    var response = await http.post(
+      Uri.parse("http://10.0.2.2:8000/token"),
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: {
+        "username": username,
+        "password": password,
+      },
+    );
 
-      if (response.statusCode == 200) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (_) => const SignupPage(),
-        ));
-      } else {
-        print('Failed to load data');
-      }
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      String accessToken = data['access_token'];
 
+      // Store the token securely
+      await storage.write(key: "accesstoken", value: accessToken);
+      return accessToken;
+    } else {
+      debugPrint('Failed to authenticate: ${response.body}');
+      return null;
+    }
+  } catch (e) {
+    debugPrint('Error during token creation: $e');
+    return null;
+  }
+}
+
+
+Future<void> _signIn() async {
+  if (_formkey.currentState!.validate()) {
+    String? token = await createToken(_username.text, _password.text);
+
+    if (token != null) {
+      debugPrint(storage.read(key: "accessToken").toString());
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomePage()),
+      );
+    } else {
+      // Display an error message, e.g., using a SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to sign in. Please check your credentials.')),
+      );
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,12 +96,12 @@ class _SigninPageState extends State<SigninPage> {
                           'Sign in',
                           style: GoogleFonts.outfit(
                             textStyle: const TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
+                                fontSize: 35, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],
                     ),
-                  ),
+                  ),  
               
                   // Username
                   Padding(

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:snoutsaver/pages/home_page.dart';
 import 'package:snoutsaver/pages/signin_page.dart';
 
 class SignupPage extends StatefulWidget {
@@ -23,7 +22,7 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _confirmPassword = TextEditingController();
   String errorMessage = '';
 
-  Future<void> signUp() async {
+  Future<void> _signUp() async {
     setState(() {
       errorMessage = '';
     });
@@ -44,7 +43,7 @@ class _SignupPageState extends State<SignupPage> {
       if (response.statusCode == 200) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => const SigninPage()),
         );
       } else if (response.statusCode == 400) {
         // Handle the error response
@@ -95,7 +94,7 @@ class _SignupPageState extends State<SignupPage> {
                           'Sign up',
                           style: GoogleFonts.outfit(
                             textStyle: const TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
+                                fontSize: 35, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],
@@ -315,7 +314,7 @@ class _SignupPageState extends State<SignupPage> {
                     child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: signUp,
+                        onPressed: _signUp,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFff90bc),
                           shape: RoundedRectangleBorder(
