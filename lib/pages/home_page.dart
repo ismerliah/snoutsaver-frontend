@@ -122,6 +122,7 @@ class _HomePageState extends State<HomePage> {
 
           FloatingActionButton(
             onPressed: () {
+              storage.delete(key: "accesstoken");
               Navigator.push(context,MaterialPageRoute(builder: (context) => const WelcomePage()),);
             }, 
             child: const Icon(Icons.logout)
