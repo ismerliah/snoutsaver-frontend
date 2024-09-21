@@ -14,7 +14,7 @@ class WelcomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF8ACDD7),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           //LOGO
           Padding(
@@ -42,9 +42,7 @@ class WelcomePage extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (_) => const SigninPage(),
-                        ));
+                        Navigator.pushNamed(context, '/signin');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFff90bc),
@@ -71,9 +69,7 @@ class WelcomePage extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (_) => const SignupPage(),
-                        ));
+                        Navigator.pushNamed(context, '/signup');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFff90bc),

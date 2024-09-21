@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:snoutsaver/google_auth.dart';
 import 'package:snoutsaver/pages/welcome_page.dart';
 import 'package:snoutsaver/widgets/add_expense.dart';
 import 'package:snoutsaver/widgets/add_income.dart';
@@ -127,6 +128,16 @@ class _HomePageState extends State<HomePage> {
             }, 
             child: const Icon(Icons.logout)
           ),
+
+          FloatingActionButton(
+            onPressed: () async {
+              await GoogleAuth.signoutWithGoogle();
+              if (mounted) {
+                Navigator.push(context,MaterialPageRoute(builder: (context) => const WelcomePage()),);
+              }
+            },
+            child: const Text('Sign Out'),
+          )
         ],
       )
       

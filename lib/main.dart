@@ -1,8 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:snoutsaver/firebase_options.dart';
 import 'package:snoutsaver/pages/home_page.dart';
+import 'package:snoutsaver/pages/setup_page.dart';
+import 'package:snoutsaver/pages/signin_page.dart';
+import 'package:snoutsaver/pages/signup_page.dart';
 // import 'package:snoutsaver/pages/signin_page.dart';
 import 'package:snoutsaver/pages/welcome_page.dart';
 // import 'package:snoutsaver/pages/home_page.dart';
@@ -14,7 +18,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   runApp(const MainApp());
 }
 
@@ -45,7 +48,14 @@ class MainApp extends StatelessWidget {
           }
         },
       ),
+      initialRoute: '/',
+      routes: {
+        '/welcome': (context) => const WelcomePage(),
+        '/home': (context) => const HomePage(),
+        '/signin': (context) => const SigninPage(),
+        '/signup': (context) => const SignupPage(),
+        '/setup': (context) => const SetupPage(),
+      },
     );
   }
 }
-

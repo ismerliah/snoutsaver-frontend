@@ -62,9 +62,7 @@ Future<void> _signIn() async {
 
     if (token != null) {
       debugPrint(storage.read(key: "accessToken").toString());
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomePage()),
-      );
+      Navigator.pushNamed(context, '/home');
     } else {
       // Display an error message, e.g., using a SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
@@ -284,9 +282,7 @@ Future<void> _signIn() async {
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                              builder: (_) => const SignupPage(),
-                            ));
+                            Navigator.pushNamed(context, '/signup');
                           },
                           child: Text(
                             'Sign up',
