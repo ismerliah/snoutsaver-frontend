@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:snoutsaver/models/category.dart';
 
-class CategoryDialog extends StatelessWidget {
+class CategoryDialog extends StatefulWidget {
   final List<Category> categories;
   final Function(Category) onCategorySelected;
 
   const CategoryDialog({super.key, required this.categories, required this.onCategorySelected});
+
+  @override
+  _CategoryDialogState createState() => _CategoryDialogState();
+}
+
+class _CategoryDialogState extends State<CategoryDialog> {
+  Category? _selectedCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -38,20 +45,24 @@ class CategoryDialog extends StatelessWidget {
             mainAxisSpacing: 10.0,
             childAspectRatio: 0.8,
           ),
-          itemCount: categories.length,
+          itemCount: widget.categories.length,
           itemBuilder: (BuildContext context, int index) {
-            final category = categories[index];
+            final category = widget.categories[index];
+            final isSelected = _selectedCategory == category;
             return GestureDetector(
               onTap: () {
-                onCategorySelected(category);
-                Navigator.pop(context);
+                setState(() {
+                  _selectedCategory = category;
+                });
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundColor: const Color(0xFF8ACDD7),
+                    backgroundColor: isSelected
+                        ? const Color(0xFFFF90BC)
+                        : const Color(0xFF8ACDD7),
                     child: Icon(
                       category.icon,
                       color: Colors.white,
@@ -82,6 +93,9 @@ class CategoryDialog extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
+                  if (_selectedCategory != null) {
+                    widget.onCategorySelected(_selectedCategory!);
+                  }
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
