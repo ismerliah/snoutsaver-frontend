@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:snoutsaver/google_auth.dart';
+import 'package:snoutsaver/pages/home_page.dart';
 import 'package:snoutsaver/pages/signin_page.dart';
 
 class SignupPage extends StatefulWidget {
@@ -41,10 +43,7 @@ class _SignupPageState extends State<SignupPage> {
       );
 
       if (response.statusCode == 200) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const SigninPage()),
-        );
+        Navigator.pushNamed(context, '/signin');
       } else if (response.statusCode == 400) {
         // Handle the error response
         final Map<String, dynamic> result = jsonDecode(response.body);
@@ -351,6 +350,66 @@ class _SignupPageState extends State<SignupPage> {
                   //   ],
                   // ),
                   // New user? Sign up
+
+                  //or
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Expanded(
+                              child: Divider(
+                                  color: Colors.white,
+                                  thickness: 2,
+                                  endIndent: 10)),
+                          Text(
+                            'or',
+                            style: GoogleFonts.outfit(
+                              textStyle: const TextStyle(
+                                  fontSize: 16, color: Colors.white),
+                            ),
+                          ),
+                          const Expanded(
+                            child: Divider(
+                              color: Colors.white,
+                              thickness: 2,
+                              indent: 10,
+                          )),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Sign in with Google
+                  ElevatedButton.icon(
+                    icon: Image.asset('assets/images/google-icon.png', height: 24),
+                    onPressed: () async{
+                      final user = await GoogleAuth.signinWithGoogle();
+                      if (user != null && mounted) {
+                        print(user);
+                        Navigator.pushNamed(context, '/home');
+                      } else {
+                        print('Failed to sign in with Google');
+                      }
+                    }, 
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    label: Text(
+                      'Sign in with Google',
+                      style: GoogleFonts.outfit(
+                        textStyle:
+                            const TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                    ),
+                  ),
+
+                  // Already have an account
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -362,10 +421,7 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context)
-                              .pushReplacement(MaterialPageRoute(
-                            builder: (_) => const SigninPage(),
-                          ));
+                          Navigator.pushNamed(context, '/signin');
                         },
                         child: Text(
                           'Sign in',
