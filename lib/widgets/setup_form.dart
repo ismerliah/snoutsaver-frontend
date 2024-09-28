@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:snoutsaver/bloc/setup/setup_bloc.dart';
 import 'package:snoutsaver/mock_data.dart';
 import 'package:snoutsaver/models/category.dart';
 import 'package:snoutsaver/widgets/category_dialog.dart';
@@ -8,52 +10,50 @@ import 'package:snoutsaver/widgets/category_dialog.dart';
 class SetupForm extends StatelessWidget {
   const SetupForm({
     super.key,
-    required this.currentStep,
+    required this.formKey,
     required this.incomeController,
-    required this.savingGoalController,
-    required this.yearsController,
     required this.expenseControllers,
     required this.categoryControllers,
     required this.selectedCategoryIcons,
-    required this.formKey,
+    required this.savingGoalController,
+    required this.yearsController,
   });
 
-  final int currentStep;
+  final GlobalKey<FormState> formKey;
   final TextEditingController incomeController;
-  final TextEditingController savingGoalController;
-  final TextEditingController yearsController;
   final List<TextEditingController> expenseControllers;
   final List<TextEditingController> categoryControllers;
   final List<IconData> selectedCategoryIcons;
-  final GlobalKey<FormState> formKey;
+  final TextEditingController savingGoalController;
+  final TextEditingController yearsController;
 
   @override
   Widget build(BuildContext context) {
-    switch (currentStep) {
-      case 0: // Step 1: Income
-        return IncomeForm(
-          incomeController: incomeController,
-          formKey: formKey,
-        );
-
-      case 1: // Step 2: Expense
-        return ExpenseForm(
-          expenseControllers: expenseControllers,
-          categoryControllers: categoryControllers,
-          selectedCategoryIcons: selectedCategoryIcons,
-          formKey: formKey,
-        );
-
-      case 2: // Step 3: Saving Goal
-        return SavingGoalForm(
-          savingGoalController: savingGoalController,
-          yearsController: yearsController,
-          formKey: formKey,
-        );
-
-      default:
-        return const SizedBox.shrink(); // Fallback in case of error
-    }
+    return BlocBuilder<SetupBloc, SetupState>(
+      builder: (context, state) {
+        if (state is IncomeStepState) {
+          return IncomeForm(
+            incomeController: incomeController,
+            formKey: formKey,
+          );
+        } else if (state is ExpenseStepState) {
+          return ExpenseForm(
+            expenseControllers: expenseControllers,
+            categoryControllers: categoryControllers,
+            selectedCategoryIcons: selectedCategoryIcons,
+            formKey: formKey,
+          );
+        } else if (state is SavingGoalStepState) {
+          return SavingGoalForm(
+            savingGoalController: savingGoalController,
+            yearsController: yearsController,
+            formKey: formKey,
+          );
+        } else {
+          return const SizedBox.shrink(); // Fallback in case of error
+        }
+      },
+    );
   }
 }
 
@@ -99,7 +99,7 @@ class IncomeForm extends StatelessWidget {
                     border: UnderlineInputBorder(),
                   ),
                   validator:
-                      RequiredValidator(errorText: 'Please enter amount').call,
+                      RequiredValidator(errorText: '* Required').call,
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly
                   ],
@@ -250,7 +250,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                           border: UnderlineInputBorder(),
                         ),
                         validator:
-                            RequiredValidator(errorText: 'Please enter amount')
+                            RequiredValidator(errorText: '* Required')
                                 .call,
                         inputFormatters: <TextInputFormatter>[
                           FilteringTextInputFormatter.digitsOnly
@@ -348,7 +348,7 @@ class SavingGoalForm extends StatelessWidget {
                     border: UnderlineInputBorder(),
                   ),
                   validator:
-                      RequiredValidator(errorText: 'Please enter saving goal')
+                      RequiredValidator(errorText: '* Required')
                           .call,
                 ),
               ),
@@ -381,8 +381,7 @@ class SavingGoalForm extends StatelessWidget {
                     ),
                     border: UnderlineInputBorder(),
                   ),
-                  validator:
-                      RequiredValidator(errorText: 'Enter years').call,
+                  validator: RequiredValidator(errorText: '* Required').call,
                 ),
               ),
               const SizedBox(width: 8),
@@ -397,3 +396,4 @@ class SavingGoalForm extends StatelessWidget {
     );
   }
 }
+
