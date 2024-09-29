@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:snoutsaver/google_auth.dart';
-import 'package:snoutsaver/pages/welcome_page.dart';
+import 'package:snoutsaver/bloc/authentication/app_bloc.dart';
 import 'package:snoutsaver/widgets/add_expense.dart';
 import 'package:snoutsaver/widgets/add_income.dart';
 
@@ -50,8 +50,8 @@ class _HomePageState extends State<HomePage> {
         throw Exception('Failed to load user details: ${response.body}');
       }
     } catch (e) {
-      debugPrint('Error fetching user details: $e');
-      throw Exception('Failed to load user details');
+      // debugPrint('Error fetching user details: $e');
+      throw Exception(e);
     }
   }
 
@@ -114,6 +114,7 @@ class _HomePageState extends State<HomePage> {
             child: const Icon(Icons.remove),
           ),
 
+          // Delete Token 
           FloatingActionButton(
             onPressed: () {
               storage.delete(key: "accesstoken");
@@ -121,20 +122,32 @@ class _HomePageState extends State<HomePage> {
             child: const Icon(Icons.delete)
           ),
 
+          // Sign Out Button
           FloatingActionButton(
             onPressed: () {
-              storage.delete(key: "accesstoken");
-              Navigator.push(context,MaterialPageRoute(builder: (context) => const WelcomePage()),);
+              context.read<AuthenticationBloc>().add(SignOutEvent());
+              // Map<String, String> allValues = await storage.readAll();
+              // debugPrint(allValues.toString());
+              Navigator.pushNamed(context, '/welcome');
             }, 
             child: const Icon(Icons.logout)
           ),
 
           FloatingActionButton(
             onPressed: () async {
-              await GoogleAuth.signoutWithGoogle();
-              if (mounted) {
-                Navigator.push(context,MaterialPageRoute(builder: (context) => const WelcomePage()),);
-              }
+              context.read<AuthenticationBloc>().add(SignoutWithGoogle());
+              // Map<String, String> allValues = await storage.readAll();
+              // debugPrint(allValues.toString());
+              // debugPrint("delete token");
+              Navigator.pushNamed(context, '/welcome');
+              // await GoogleAuth.signoutWithGoogle();
+              // if (mounted) {
+              //   Map<String, String> allValues = await storage.readAll();
+              //   debugPrint(allValues.toString());
+              //   storage.delete(key: "accesstoken");
+              //   debugPrint("delete token");
+              //   Navigator.push(context,MaterialPageRoute(builder: (context) => const WelcomePage()),);
+              // }
             },
             child: const Text('Sign Out'),
           )
