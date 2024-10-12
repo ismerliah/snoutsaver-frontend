@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:snoutsaver/bloc/authentication/app_bloc.dart';
-import 'package:snoutsaver/widgets/add_expense.dart';
-import 'package:snoutsaver/widgets/add_income.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:snoutsaver/widgets/record_form.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,9 +21,9 @@ class _HomePageState extends State<HomePage> {
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return FractionallySizedBox(
+        return const FractionallySizedBox(
           heightFactor: 0.85,
-          child: isIncome ? const AddIncome() : const AddExpense(),
+          child: RecordBottomsheet(),
         );
       },
     );
