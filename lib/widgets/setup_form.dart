@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:snoutsaver/bloc/setup/setup_bloc.dart';
-import 'package:snoutsaver/mock_data.dart';
 import 'package:snoutsaver/models/category.dart';
+import 'package:snoutsaver/repository/category_repository.dart';
 import 'package:snoutsaver/widgets/dialogs/category_dialog.dart';
 
 class SetupForm extends StatelessWidget {
@@ -169,16 +169,19 @@ class _ExpenseFormState extends State<ExpenseForm> {
   }
 
   // Category selection dialog
-  void selectCategory(
-      BuildContext context, List<Category> categories, int index) {
+  void selectCategory(BuildContext context, int index) async {
+    List<Category> allCategories = await CategoryRepository().fetchCategories();
+    List<Category> filteredCategories = allCategories
+        .where((category) => category.type == 'Expense')
+        .toList();
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return CategoryDialog(
-          categories: categories,
+          categories: filteredCategories,
           onCategorySelected: (Category selectedCategory) {
             setState(() {
-              widget.categoryControllers[index].text = selectedCategory.name;
+              widget.categoryControllers[index].text = selectedCategory.id.toString();
               widget.selectedCategoryIcons[index] = selectedCategory.icon;
             });
           },
@@ -211,7 +214,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                       flex: 0,
                       child: GestureDetector(
                         onTap: () {
-                          selectCategory(context, expenseCategories, index);
+                          selectCategory(context, index);
                         },
                         child: Container(
                           padding: const EdgeInsets.all(16),

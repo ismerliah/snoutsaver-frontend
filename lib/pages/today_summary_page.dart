@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:snoutsaver/mock_data.dart';
 import 'package:snoutsaver/models/category.dart';
+import 'package:snoutsaver/repository/category_repository.dart';
 import 'package:snoutsaver/widgets/record_form.dart';
 
 class TodaySummaryPage extends StatefulWidget {
@@ -12,6 +12,13 @@ class TodaySummaryPage extends StatefulWidget {
 
 class _TodaySummaryPageState extends State<TodaySummaryPage> {
   int _currentIndex = 0;
+  late Future<List<Category>> _categoriesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _categoriesFuture = CategoryRepository().fetchCategories();
+  }
 
   void _onTabChanged(int index) {
     setState(() {
@@ -32,11 +39,6 @@ class _TodaySummaryPageState extends State<TodaySummaryPage> {
     );
   }
 
-  // Function to get categories based on selected tab
-  List<Category> _getCategories() {
-    return _currentIndex == 0 ? incomeCategories : expenseCategories;
-  }
-
   // Sample data for transactions
   final Map<String, List<Map<String, dynamic>>> transactions = {
     'Salary': [
@@ -53,8 +55,6 @@ class _TodaySummaryPageState extends State<TodaySummaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Category> categories = _getCategories();
-
     return Scaffold(
       backgroundColor: const Color(0xFF8ACDD7),
       appBar: AppBar(
@@ -71,20 +71,38 @@ class _TodaySummaryPageState extends State<TodaySummaryPage> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 24),
-            RecordTabbar(onTabChanged: _onTabChanged),
-            const SizedBox(height: 8),
+      body: FutureBuilder<List<Category>>(
+        future: _categoriesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('Failed to load categories'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No categories found'));
+          }
 
-            // Accordion separated by Category
-            TransactionList(
-                categories: categories,
-                transactions: transactions,
-                currentIndex: _currentIndex),
-          ],
-        ),
+          final List<Category> categories = _currentIndex == 0
+              ? snapshot.data!.where((c) => c.type == 'income').toList()
+              : snapshot.data!.where((c) => c.type == 'expense').toList();
+
+          return Center(
+            child: Column(
+              children: [
+                const SizedBox(height: 24),
+                RecordTabbar(onTabChanged: _onTabChanged),
+                const SizedBox(height: 8),
+
+                // Accordion separated by Category
+                TransactionList(
+                  categories: categories,
+                  transactions: transactions,
+                  currentIndex: _currentIndex,
+                ),
+              ],
+            ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _addTransaction(),

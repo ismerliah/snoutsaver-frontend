@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:intl/intl.dart';
-import 'package:snoutsaver/mock_data.dart';
 import 'package:snoutsaver/models/category.dart';
+import 'package:snoutsaver/repository/category_repository.dart';
 import 'package:snoutsaver/widgets/dialogs/category_dialog.dart';
 
 class RecordBottomsheet extends StatefulWidget {
@@ -86,7 +86,7 @@ class _RecordFormState extends State<RecordForm> {
   //   _selectedDate = DateTime.now();
   //   _dateController.text = DateFormat('dd MMM, yyyy').format(_selectedDate!);
   // }
-  
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -113,12 +113,17 @@ class _RecordFormState extends State<RecordForm> {
     }
   }
 
-  void _selectCategory(BuildContext context, List<Category> categories) {
+  void _selectCategory(BuildContext context) async {
+    List<Category> allCategories = await CategoryRepository().fetchCategories();
+    List<Category> filteredCategories = allCategories
+        .where((category) => widget.isIncome ? category.type == 'Income' : category.type == 'Expense')
+        .toList();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return CategoryDialog(
-          categories: categories,
+          categories: filteredCategories,
           onCategorySelected: (Category selectedCategory) {
             setState(() {
               _categoryController.text = selectedCategory.name;
@@ -145,9 +150,6 @@ class _RecordFormState extends State<RecordForm> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Category> categories =
-        widget.isIncome ? incomeCategories : expenseCategories;
-
     return Form(
       key: _formKey,
       child: Column(
@@ -181,8 +183,8 @@ class _RecordFormState extends State<RecordForm> {
             keyboardType: TextInputType.number,
             validator: RequiredValidator(errorText: '* Required').call,
             inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
+              FilteringTextInputFormatter.digitsOnly
+            ],
           ),
           const SizedBox(height: 24),
 
@@ -191,7 +193,7 @@ class _RecordFormState extends State<RecordForm> {
             controller: _categoryController,
             readOnly: true,
             onTap: () {
-              _selectCategory(context, categories);
+              _selectCategory(context);
             },
             decoration: InputDecoration(
               labelText: 'Category',
@@ -288,7 +290,7 @@ class _RecordFormState extends State<RecordForm> {
           // Save button
           SizedBox(
             width: double.infinity,
-                        height: 50,
+            height: 50,
             child: ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
@@ -317,7 +319,7 @@ class _RecordFormState extends State<RecordForm> {
     );
   }
 }
-           
+
 class RecordTabbar extends StatefulWidget {
   final ValueChanged<int> onTabChanged;
   final void Function()? resetForm;
