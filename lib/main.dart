@@ -13,6 +13,7 @@ import 'package:snoutsaver/pages/setup_page.dart';
 import 'package:snoutsaver/pages/signin_page.dart';
 import 'package:snoutsaver/pages/signup_page.dart';
 import 'package:snoutsaver/pages/welcome_page.dart';
+import 'package:snoutsaver/repository/setup_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,35 +43,22 @@ class MainApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        //debugShowCheckedModeBanner: false,
-        // home: SplashPage(),
-        // home: HomePage(),
-        // home: ProfilePage(),
-        // home: WelcomePage()
         home: FutureBuilder(
-          future: Future.wait([
-            storage.read(key: 'token'),
-            storage.read(key: 'expires_at'),
-          ]),
+          future: _initializeApp(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasData) {
-              String? token = snapshot.data![0];
-              String? expiresAt = snapshot.data![1];
+              bool hasSetupData = snapshot.data!['hasSetupData'];
+              bool isTokenValid = snapshot.data!['isTokenValid'];
 
-              if (token != null && expiresAt != null) {
-                DateTime expiresAtDateTime = DateTime.parse(expiresAt);
-                DateTime now = DateTime.now();
-                if (now.isAfter(expiresAtDateTime)) {
-                  // Token has expired, log out the user
-                  return const WelcomePage();
+              if (isTokenValid) {
+                if (hasSetupData) {
+                  return const ProfilePage(); // Change later
                 } else {
-                  // Token is still valid
-                  return const ProfilePage(); //Change later
+                  return SetupPage();
                 }
               } else {
-                // No token or expires_at value found
                 return const WelcomePage();
               }
             } else {
@@ -90,5 +78,34 @@ class MainApp extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Future<Map<String, dynamic>> _initializeApp() async {
+    const storage = FlutterSecureStorage();
+    final setupRepository = SetupRepository();
+
+    String? token = await storage.read(key: 'token');
+    String? expiresAt = await storage.read(key: 'expires_at');
+
+    bool isTokenValid = false;
+    bool hasSetupData = false;
+
+    if (token != null && expiresAt != null) {
+      DateTime expiresAtDateTime = DateTime.parse(expiresAt);
+      DateTime now = DateTime.now();
+
+      // Check if the token is still valid
+      if (now.isBefore(expiresAtDateTime)) {
+        isTokenValid = true;
+
+        // Check if the setup data exists
+        hasSetupData = await setupRepository.hasSetupData();
+      }
+    }
+
+    return {
+      'isTokenValid': isTokenValid,
+      'hasSetupData': hasSetupData,
+    };
   }
 }

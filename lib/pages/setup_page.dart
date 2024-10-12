@@ -138,6 +138,23 @@ class SetupPage extends StatelessWidget {
                                           .read<SetupBloc>()
                                           .add(NextStepEvent());
                                     } else {
+                                      final List<Map<String, dynamic>>
+                                          monthlyExpenses = [];
+                                      for (int i = 0; i < _expenseControllers.length; i++) {
+                                        monthlyExpenses.add({
+                                          "amount": double.parse( _expenseControllers[i].text),
+                                          "category_id": _categoryControllers[i].text,
+                                        });
+                                      }
+                                      // Submit form and navigate to dashboard
+                                      context
+                                          .read<SetupBloc>()
+                                          .add(SubmitFormEvent(
+                                            monthlyIncome: double.parse(_incomeController.text),
+                                            monthlyExpenses: monthlyExpenses,
+                                            savingGoal: double.parse(_savingGoalController.text),
+                                            year: int.parse(_yearsController.text),
+                                          ));
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
@@ -227,12 +244,13 @@ class StepperItem extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-
         Text(
           label,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: isActive || isCompleted ? const Color(0xFFFF90BC) : Colors.grey.shade700,
+            color: isActive || isCompleted
+                ? const Color(0xFFFF90BC)
+                : Colors.grey.shade700,
           ),
         ),
       ],
