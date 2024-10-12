@@ -5,7 +5,7 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:snoutsaver/bloc/setup/setup_bloc.dart';
 import 'package:snoutsaver/mock_data.dart';
 import 'package:snoutsaver/models/category.dart';
-import 'package:snoutsaver/widgets/category_dialog.dart';
+import 'package:snoutsaver/widgets/dialogs/category_dialog.dart';
 
 class SetupForm extends StatelessWidget {
   const SetupForm({

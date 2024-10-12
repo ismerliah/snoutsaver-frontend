@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:snoutsaver/mock_data.dart';
 import 'package:snoutsaver/models/category.dart';
-import 'package:snoutsaver/widgets/category_dialog.dart';
+import 'package:snoutsaver/widgets/dialogs/category_dialog.dart';
 
 class AddIncome extends StatefulWidget {
   const AddIncome({super.key});

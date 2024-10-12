@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snoutsaver/repository/user_repository.dart';
 import 'package:snoutsaver/bloc/authentication/app_bloc.dart';
 
@@ -12,7 +13,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     on<SigninEvent>(_onSignin);
     on<SignOutEvent>(_onSignout);
     on<SigninwithGoogleEvent>(_onSigninwithGoogle);
-    on<SignoutWithGoogle>(_onSignoutWithGoogle);
+    // on<SignoutWithGoogle>(_onSignoutWithGoogle);
   }
 
   final storage = const FlutterSecureStorage();
@@ -41,26 +42,13 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
         password: event.password,
       );
       
-      String? storedToken = await storage.read(key: "accesstoken");
+      String? storedToken = await storage.read(key: "token");
         if (storedToken != null) {
           emit(SigninLoading());
           emit(SigninSuccess());
         } 
     } catch(e) {
       emit(SigninFailure(error: e.toString()));
-    }
-  }
-
-  Future<void> _onSignout(SignOutEvent event, Emitter<AuthenticationState> emit) async {
-    try {
-      // const storage = FlutterSecureStorage();
-      if (await storage.read(key: "accesstoken") != null) {
-        await storage.delete(key: "accesstoken");
-      } else {
-        throw Exception("No access token found");
-      }
-    } catch(e) {
-      emit(SignupFailure(error: e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -93,7 +81,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
           password: firebaseUser.uid,
         );
 
-        String? storedToken = await storage.read(key: "accesstoken");
+        String? storedToken = await storage.read(key: "token");
         if (storedToken != null) {
           emit(SigninwithGoogleSuccess());
         } 
@@ -103,20 +91,17 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     }
   }
 
-  Future<void> _onSignoutWithGoogle(SignoutWithGoogle event, Emitter<AuthenticationState> emit) async {
+  Future<void> _onSignout(SignOutEvent event, Emitter<AuthenticationState> emit) async {
     try {
       FirebaseAuth.instance.signOut();
       GoogleSignIn().signOut();
-      if (await storage.read(key: "accesstoken") != null) {
-        await storage.delete(key: "accesstoken");
+      if (await storage.read(key: "token") != null) {
+        await storage.delete(key: "token");
       } else {
         throw Exception("No access token found");
       }
     } catch(e) {
-      // emit(SignoutFailure(error: e.toString()));
-      emit(SignoutFailure(error: e.toString().replaceAll('Exception: ', '')));
+      emit(SignupFailure(error: e.toString().replaceAll('Exception: ', '')));
     }
   }
 }
-
-// แยก role default กับ google เพราะในหน้า profile role google จะไม่สามารถเข้าถึงได้

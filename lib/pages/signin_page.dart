@@ -6,7 +6,7 @@ import 'package:form_field_validator/form_field_validator.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:snoutsaver/bloc/authentication/app_bloc.dart';
-import 'package:snoutsaver/widgets/dialog.dart';
+import 'package:snoutsaver/widgets/dialogs/dialog.dart';
 import 'package:snoutsaver/widgets/loading.dart';
 
 class SigninPage extends StatefulWidget {
@@ -33,7 +33,7 @@ class _SigninPageState extends State<SigninPage> {
           // Sign in
           if (state is SigninSuccess) {
             debugPrint('Signin Success');
-            Navigator.pushNamed(context, '/home');
+            Navigator.pushNamed(context, '/profile');
 
           } else if (state is SigninFailure) {
             debugPrint("Signin Error: ${state.error}");
@@ -281,6 +281,8 @@ class _SigninPageState extends State<SigninPage> {
                             ),
                             TextButton(
                               onPressed: () {
+                                _username.clear();
+                                _password.clear();
                                 Navigator.pushNamed(context, '/signup');
                               },
                               child: Text(

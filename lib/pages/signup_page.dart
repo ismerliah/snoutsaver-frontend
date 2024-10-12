@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:snoutsaver/bloc/authentication/app_bloc.dart';
-import 'package:snoutsaver/widgets/dialog.dart';
+import 'package:snoutsaver/widgets/dialogs/dialog.dart';
 import 'package:snoutsaver/widgets/loading.dart';
 
 class SignupPage extends StatefulWidget {
@@ -460,6 +460,10 @@ class _SignupPageState extends State<SignupPage> {
                             ),
                             TextButton(
                               onPressed: () {
+                                _username.clear();
+                                _email.clear();
+                                _password.clear();
+                                _confirmPassword.clear();
                                 Navigator.pushNamed(context, '/signin');
                               },
                               child: Text(

@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
 
     Future<String> fetchUserDetails() async {
     try {
-      final token = await storage.read(key: 'accesstoken');
+      final token = await storage.read(key: 'token');
       if (token == null) {
         throw Exception('No access token found');
       }
@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage> {
           // Delete Token 
           FloatingActionButton(
             onPressed: () {
-              storage.delete(key: "accesstoken");
+              storage.delete(key: "token");
             }, 
             child: const Icon(Icons.delete)
           ),
@@ -133,24 +133,24 @@ class _HomePageState extends State<HomePage> {
             child: const Icon(Icons.logout)
           ),
 
-          FloatingActionButton(
-            onPressed: () async {
-              context.read<AuthenticationBloc>().add(SignoutWithGoogle());
-              // Map<String, String> allValues = await storage.readAll();
-              // debugPrint(allValues.toString());
-              // debugPrint("delete token");
-              Navigator.pushNamed(context, '/welcome');
-              // await GoogleAuth.signoutWithGoogle();
-              // if (mounted) {
-              //   Map<String, String> allValues = await storage.readAll();
-              //   debugPrint(allValues.toString());
-              //   storage.delete(key: "accesstoken");
-              //   debugPrint("delete token");
-              //   Navigator.push(context,MaterialPageRoute(builder: (context) => const WelcomePage()),);
-              // }
-            },
-            child: const Text('Sign Out'),
-          )
+          // FloatingActionButton(
+          //   onPressed: () async {
+          //     context.read<AuthenticationBloc>().add(SignoutWithGoogle());
+          //     // Map<String, String> allValues = await storage.readAll();
+          //     // debugPrint(allValues.toString());
+          //     // debugPrint("delete token");
+          //     Navigator.pushNamed(context, '/welcome');
+          //     // await GoogleAuth.signoutWithGoogle();
+          //     // if (mounted) {
+          //     //   Map<String, String> allValues = await storage.readAll();
+          //     //   debugPrint(allValues.toString());
+          //     //   storage.delete(key: "accesstoken");
+          //     //   debugPrint("delete token");
+          //     //   Navigator.push(context,MaterialPageRoute(builder: (context) => const WelcomePage()),);
+          //     // }
+          //   },
+          //   child: const Text('Sign Out'),
+          // )
         ],
       )
       

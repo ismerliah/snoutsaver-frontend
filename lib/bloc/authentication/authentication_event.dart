@@ -1,5 +1,7 @@
 sealed class AuthenticationEvent {}
 
+class ResetAuthStateEvent extends AuthenticationEvent {}
+
 class SignupEvent extends AuthenticationEvent {
   final String username;
   final String email;
