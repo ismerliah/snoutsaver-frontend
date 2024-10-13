@@ -69,9 +69,12 @@ class _SetupPageState extends State<SetupPage> {
         _yearsController.text = setupData['year'].toString();
 
         for (var expense in setupData['monthly_expenses']) {
-          _expenseControllers.add(TextEditingController(text: formatAmount(expense['amount'])));
-          _categoryControllers.add(TextEditingController(text: expense['category_id'].toString()));
-          _selectedCategoryIcons.add(Category.convertIcon(expense['category_id'], expense['icon']));
+          _expenseControllers.add(
+              TextEditingController(text: formatAmount(expense['amount'])));
+          _categoryControllers.add(
+              TextEditingController(text: expense['category_id'].toString()));
+          _selectedCategoryIcons.add(
+              Category.convertIcon(expense['category_id'], expense['icon']));
         }
 
         isEditing = true;
@@ -217,23 +220,31 @@ class _SetupPageState extends State<SetupPage> {
                                     } else {
                                       final List<Map<String, dynamic>>
                                           monthlyExpenses = [];
-                                      for (int i = 0; i < _expenseControllers.length; i++) {
+                                      for (int i = 0;
+                                          i < _expenseControllers.length;
+                                          i++) {
                                         monthlyExpenses.add({
-                                          "amount": double.parse(_expenseControllers[i].text),
-                                          "category_id": _categoryControllers[i].text,
+                                          "amount": double.parse(
+                                              _expenseControllers[i].text),
+                                          "category_id":
+                                              _categoryControllers[i].text,
                                         });
                                       }
                                       // Submit form and navigate to dashboard
                                       context.read<SetupBloc>().add(
                                             SubmitFormEvent(
-                                              monthlyIncome: double.parse(_incomeController.text),
+                                              monthlyIncome: double.parse(
+                                                  _incomeController.text),
                                               monthlyExpenses: monthlyExpenses,
-                                              savingGoal: double.parse(_savingGoalController.text),
-                                              year: int.parse(_yearsController.text),
+                                              savingGoal: double.parse(
+                                                  _savingGoalController.text),
+                                              year: int.parse(
+                                                  _yearsController.text),
                                               isEditing: isEditing,
                                             ),
                                           );
-                                      Navigator.pushNamed(context, '/dashboard');
+                                      Navigator.pushNamed(
+                                          context, '/dashboard');
                                     }
                                   }
                                 },

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:snoutsaver/bloc/dashboard/wallet_bloc.dart';
-import 'package:snoutsaver/bloc/dashboard/wallet_event.dart';
-import 'package:snoutsaver/bloc/dashboard/wallet_state.dart';
+import 'package:snoutsaver/bloc/dashboard/pocket_bloc.dart';
+import 'package:snoutsaver/bloc/dashboard/pocket_event.dart';
+import 'package:snoutsaver/bloc/dashboard/pocket_state.dart';
 
-import '/models/wallet.dart';
+import '../models/pocket.dart';
 
 class WalletPage extends StatelessWidget {
   const WalletPage({super.key});
@@ -15,11 +15,11 @@ class WalletPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("All Wallets"),
       ),
-      body: BlocBuilder<WalletBloc, WalletState>(
+      body: BlocBuilder<PocketBloc, PocketState>(
         builder: (context, state) {
-          if (state is WalletInitial) {
+          if (state is PocketInitial) {
             return const Center(child: Text("No wallets added yet."));
-          } else if (state is WalletLoaded) {
+          } else if (state is PocketLoaded) {
             return Column(
               children: [
                 // Display the goals progress bar
@@ -56,11 +56,11 @@ class WalletPage extends StatelessWidget {
                 // Display the list of wallets
                 Expanded(
                   child: ListView.builder(
-                    itemCount: state.wallets.length,
+                    itemCount: state.pockets.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        title: Text(state.wallets[index].name),
-                        subtitle: Text('${state.wallets[index].balance} ฿'),
+                        title: Text(state.pockets[index].name),
+                        subtitle: Text('${state.pockets[index].balance} ฿'),
                       );
                     },
                   ),
@@ -162,13 +162,13 @@ class _AddWalletDialogState extends State<AddWalletDialog> {
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
-              final wallet = Wallet(
+              final wallet = Pocket(
                 name: name,
                 balance: balance,
                 monthlyExpense: monthlyExpense,
               );
               // Add the wallet using BLoC
-              context.read<WalletBloc>().add(AddWallet(wallet));
+              context.read<PocketBloc>().add(AddPocket(wallet));
               Navigator.of(context).pop();
             }
           },

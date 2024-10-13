@@ -2,12 +2,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:snoutsaver/bloc/dashboard/wallet_bloc.dart';
+import 'package:snoutsaver/bloc/dashboard/pocket_bloc.dart';
 import 'package:snoutsaver/bloc/setup/setup_bloc.dart';
 import 'package:snoutsaver/bloc/authentication/app_bloc.dart';
 import 'package:snoutsaver/bloc/user/app_bloc.dart';
 import 'package:snoutsaver/firebase_options.dart';
-import 'package:snoutsaver/pages/dashboard_page.dart';
+import 'package:snoutsaver/pages/pocketdashboard_page.dart';
 import 'package:snoutsaver/pages/editprofile_page.dart';
 import 'package:snoutsaver/pages/home_page.dart';
 import 'package:snoutsaver/pages/profile_page.dart';
@@ -43,8 +43,8 @@ class MainApp extends StatelessWidget {
         BlocProvider<ProfileBloc>(
           create: (context) => ProfileBloc(),
         ),
-        BlocProvider<WalletBloc>(
-          create: (context) => WalletBloc(),
+        BlocProvider<PocketBloc>(
+          create: (context) => PocketBloc(),
         )
       ],
       child: MaterialApp(
