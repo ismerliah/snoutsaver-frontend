@@ -10,6 +10,7 @@ class SetupBloc extends Bloc<SetupEvent, SetupState> {
     on<NextStepEvent>(_onNextStep);
     on<PreviousStepEvent>(_onPreviousStep);
     on<SubmitFormEvent>(_onSubmitForm);
+    on<LoadSetupDataEvent>(_onLoadSetupData);
   }
 
   final storage = const FlutterSecureStorage();
@@ -31,18 +32,41 @@ class SetupBloc extends Bloc<SetupEvent, SetupState> {
   }
 
   Future<void> _onSubmitForm(SubmitFormEvent event, Emitter<SetupState> emit) async {
-    if (state is SavingGoalStepState) {
-      try {
+    try {
+      if (event.isEditing) {
+        // Update existing setup
+        await SetupRepository().updateSetup(
+          monthlyIncome: event.monthlyIncome,
+          monthlyExpenses: event.monthlyExpenses,
+          savingGoal: event.savingGoal,
+          year: event.year,
+        );
+      } else {
+        // Create new setup
         await SetupRepository().submitSetup(
           monthlyIncome: event.monthlyIncome,
           monthlyExpenses: event.monthlyExpenses,
           savingGoal: event.savingGoal,
-          year: event.year
+          year: event.year,
         );
-      } catch (error) {
-        print("Failed to submit setup: $error");
       }
+      emit(const SetupCompleteState());
+    } catch (error) {
+      print("Failed to submit setup: $error");
     }
   }
 
+  Future<void> _onLoadSetupData(LoadSetupDataEvent event, Emitter<SetupState> emit) async {
+    try {
+      final setupData = await SetupRepository().fetchSetupData();
+      emit(SetupLoadedState(
+        monthlyIncome: setupData['monthly_income'],
+        savingGoal: setupData['saving_goal'],
+        year: setupData['year'],
+        monthlyExpenses: setupData['monthly_expenses'],
+      ));
+    } catch (error) {
+      print("Failed to load setup data: $error");
+    }
+  }
 }

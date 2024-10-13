@@ -60,9 +60,9 @@ class MainApp extends StatelessWidget {
 
               if (isTokenValid) {
                 if (hasSetupData) {
-                  return const DashboardPage(); // Change later
+                  return const DashboardPage();
                 } else {
-                  return SetupPage();
+                  return const SetupPage();
                 }
               } else {
                 return const WelcomePage();
@@ -78,7 +78,7 @@ class MainApp extends StatelessWidget {
           '/home': (context) => const HomePage(),
           '/signin': (context) => const SigninPage(),
           '/signup': (context) => const SignupPage(),
-          '/setup': (context) => SetupPage(),
+          '/setup': (context) => const SetupPage(),
           '/profile': (context) => const ProfilePage(),
           '/editprofile': (context) => const EditProfilePage(),
           '/dashboard': (context) => const DashboardPage(),

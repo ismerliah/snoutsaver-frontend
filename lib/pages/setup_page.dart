@@ -1,20 +1,85 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:snoutsaver/bloc/setup/setup_bloc.dart';
-import 'package:snoutsaver/pages/dashboard_page.dart';
+import 'package:snoutsaver/models/category.dart';
+import 'package:snoutsaver/repository/setup_repository.dart';
 import 'package:snoutsaver/widgets/setup_form.dart';
 
-class SetupPage extends StatelessWidget {
-  SetupPage({super.key});
+class SetupPage extends StatefulWidget {
+  const SetupPage({super.key});
 
+  @override
+  _SetupPageState createState() => _SetupPageState();
+}
+
+class _SetupPageState extends State<SetupPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _incomeController = TextEditingController();
   final TextEditingController _savingGoalController = TextEditingController();
   final TextEditingController _yearsController = TextEditingController();
 
-  final List<TextEditingController> _expenseControllers = [TextEditingController()];
-  final List<TextEditingController> _categoryControllers = [TextEditingController()];
-  final List<IconData> _selectedCategoryIcons = [Icons.category_rounded];
+  final List<TextEditingController> _expenseControllers = [];
+  final List<TextEditingController> _categoryControllers = [];
+  final List<IconData> _selectedCategoryIcons = [];
+
+  bool isEditing = false;
+  final setupRepository = SetupRepository();
+
+  String formatAmount(double amount) {
+    if (amount == amount.toInt()) {
+      return amount.toInt().toString();
+    } else {
+      return amount.toString();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkSetupData();
+  }
+
+  Future<void> _checkSetupData() async {
+    if (await setupRepository.hasSetupData()) {
+      _loadSetupData();
+    } else {
+      _initializeEmptyFields();
+    }
+  }
+
+  void _initializeEmptyFields() {
+    setState(() {
+      _expenseControllers.add(TextEditingController());
+      _categoryControllers.add(TextEditingController());
+      _selectedCategoryIcons.add(Icons.category_rounded);
+    });
+  }
+
+  void _loadSetupData() async {
+    final setupData = await setupRepository.fetchSetupData();
+
+    if (setupData != null) {
+      setState(() {
+        // Pre-fill form fields with setup data
+        _incomeController.text = formatAmount(setupData['monthly_income']);
+        _savingGoalController.text = formatAmount(setupData['saving_goal']);
+        _yearsController.text = setupData['year'].toString();
+
+        for (var expense in setupData['monthly_expenses']) {
+          _expenseControllers.add(TextEditingController(text: formatAmount(expense['amount'])));
+          _categoryControllers.add(TextEditingController(text: expense['category_id'].toString()));
+          _selectedCategoryIcons.add(Category.convertIcon(expense['category_id'], expense['icon']));
+        }
+
+        isEditing = true;
+      });
+    } else {
+      _initializeEmptyFields();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +92,18 @@ class SetupPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              // Back button
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  padding: const EdgeInsets.only(left: 16),
+                  icon: const Icon(Icons.arrow_back_ios, size: 30),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+
               // LOGO
               Container(
                 width: 276,
@@ -41,7 +118,7 @@ class SetupPage extends StatelessWidget {
 
               // Stepper form container
               Padding(
-                padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24.0),
@@ -120,10 +197,10 @@ class SetupPage extends StatelessWidget {
                                     side: const BorderSide(
                                         color: Color(0xFFff90bc), width: 2),
                                   ),
-                                  child: const Text(
+                                  child: Text(
                                     'Back',
-                                    style: TextStyle(
-                                      color: Color(0xFFff90bc),
+                                    style: GoogleFonts.outfit(
+                                      color: const Color(0xFFff90bc),
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -142,25 +219,21 @@ class SetupPage extends StatelessWidget {
                                           monthlyExpenses = [];
                                       for (int i = 0; i < _expenseControllers.length; i++) {
                                         monthlyExpenses.add({
-                                          "amount": double.parse( _expenseControllers[i].text),
+                                          "amount": double.parse(_expenseControllers[i].text),
                                           "category_id": _categoryControllers[i].text,
                                         });
                                       }
                                       // Submit form and navigate to dashboard
-                                      context
-                                          .read<SetupBloc>()
-                                          .add(SubmitFormEvent(
-                                            monthlyIncome: double.parse(_incomeController.text),
-                                            monthlyExpenses: monthlyExpenses,
-                                            savingGoal: double.parse(_savingGoalController.text),
-                                            year: int.parse(_yearsController.text),
-                                          ));
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const DashboardPage()),
-                                      );
+                                      context.read<SetupBloc>().add(
+                                            SubmitFormEvent(
+                                              monthlyIncome: double.parse(_incomeController.text),
+                                              monthlyExpenses: monthlyExpenses,
+                                              savingGoal: double.parse(_savingGoalController.text),
+                                              year: int.parse(_yearsController.text),
+                                              isEditing: isEditing,
+                                            ),
+                                          );
+                                      Navigator.pushNamed(context, '/dashboard');
                                     }
                                   }
                                 },
@@ -172,9 +245,9 @@ class SetupPage extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 24, vertical: 12),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   'Next',
-                                  style: TextStyle(
+                                  style: GoogleFonts.outfit(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white),
                                 ),
@@ -234,7 +307,7 @@ class StepperItem extends StatelessWidget {
                   )
                 : Text(
                     '$stepNumber',
-                    style: TextStyle(
+                    style: GoogleFonts.outfit(
                       fontWeight: FontWeight.bold,
                       color: isActive
                           ? const Color(0xFFFF90BC)
@@ -246,7 +319,7 @@ class StepperItem extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           label,
-          style: TextStyle(
+          style: GoogleFonts.outfit(
             fontWeight: FontWeight.bold,
             color: isActive || isCompleted
                 ? const Color(0xFFFF90BC)

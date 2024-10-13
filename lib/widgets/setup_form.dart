@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:snoutsaver/bloc/setup/setup_bloc.dart';
 import 'package:snoutsaver/models/category.dart';
 import 'package:snoutsaver/repository/category_repository.dart';
@@ -75,9 +76,9 @@ class IncomeForm extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
+          Text(
             'Monthly Income',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           Row(
@@ -106,9 +107,9 @@ class IncomeForm extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'THB',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -198,9 +199,9 @@ class _ExpenseFormState extends State<ExpenseForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
+          Text(
             'Monthly Expense',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           Column(
@@ -261,9 +262,9 @@ class _ExpenseFormState extends State<ExpenseForm> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Text(
+                    Text(
                       'THB',
-                      style: TextStyle(
+                      style: GoogleFonts.outfit(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -290,11 +291,11 @@ class _ExpenseFormState extends State<ExpenseForm> {
             }),
           ),
           if (_showMaxRowWarning)
-            const Padding(
-              padding: EdgeInsets.only(top: 8.0),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
               child: Text(
                 'Maximum of 5 expense rows reached',
-                style: TextStyle(
+                style: GoogleFonts.outfit(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: Colors.red,
@@ -327,9 +328,9 @@ class SavingGoalForm extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
+          Text(
             'Saving Goal',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           Row(
@@ -356,9 +357,9 @@ class SavingGoalForm extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'THB',
-                style: TextStyle(
+                style: GoogleFonts.outfit(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -388,9 +389,9 @@ class SavingGoalForm extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'years',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),

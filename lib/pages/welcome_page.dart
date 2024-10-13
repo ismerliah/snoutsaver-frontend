@@ -3,12 +3,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:snoutsaver/bloc/authentication/app_bloc.dart';
+import 'package:snoutsaver/repository/setup_repository.dart';
 import 'package:snoutsaver/widgets/dialogs/dialog.dart';
 import 'package:snoutsaver/widgets/loading.dart';
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
   final storage = const FlutterSecureStorage();
+
+  void _checkSetupData(BuildContext context) async {
+    final setupRepository = SetupRepository();
+    final hasSetupData = await setupRepository.hasSetupData();
+    if (hasSetupData) {
+      Navigator.pushNamed(context, '/dashboard');
+    } else {
+      Navigator.pushNamed(context, '/setup');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +29,7 @@ class WelcomePage extends StatelessWidget {
         listener: (context, state) {
           // sign in with google
           if (state is SigninwithGoogleSuccess) {
-            Navigator.pushNamed(context, '/dashboard');
+            _checkSetupData(context);
           } else if (state is SigninwithGoogleFailure) {
             debugPrint('Sign in with Google Failure: ${state.error}');
             CreateDialog().showErrorDialog(context, 'Failed to sign in with Google. Please try again.');

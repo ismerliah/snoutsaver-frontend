@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:snoutsaver/models/category.dart';
 import 'package:snoutsaver/repository/category_repository.dart';
 import 'package:snoutsaver/widgets/record_form.dart';
@@ -58,9 +59,9 @@ class _TodaySummaryPageState extends State<TodaySummaryPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF8ACDD7),
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Today',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFFFF90BC),
@@ -141,7 +142,7 @@ class TransactionList extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 90.0),
                 child: Text(
                   '${_currentIndex == 0 ? 'Income' : 'Expense'} not found',
-                  style: TextStyle(
+                  style: GoogleFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.grey[600],
@@ -177,7 +178,7 @@ class TransactionList extends StatelessWidget {
                     leading: Icon(category.icon, color: const Color(0xFFFF90BC)),
                     title: Text(
                       '${category.name} (Total: $totalAmount ฿)',
-                      style: const TextStyle(
+                      style: GoogleFonts.outfit(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
@@ -189,7 +190,7 @@ class TransactionList extends StatelessWidget {
                         title: Text(transaction['name']),
                         trailing: Text(
                           '${transaction['amount']} ฿',
-                          style: TextStyle(
+                          style: GoogleFonts.outfit(
                             color: _currentIndex == 0 ? Colors.green : Colors.red,
                             fontSize: 16,
                           ),

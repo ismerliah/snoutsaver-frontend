@@ -18,11 +18,19 @@ class Category {
       id: json['id'],
       name: json['name'],
       type: json['type'],
-      icon: _convertIconName(json['icon']),
+      icon: convertIcon(json['id'], json['icon']),
     );
   }
 
-  // Function to convert icon name to IconData
+  // Function to convert category id or icon name to IconData
+  static IconData convertIcon(int categoryId, String? iconName) {
+    if (iconName != null && iconName.isNotEmpty) {
+      return _convertIconName(iconName);
+    }
+
+    return _getIconFromCategoryId(categoryId);
+  }
+
   static IconData _convertIconName(String iconName) {
     final Map<String, IconData> iconMap = {
       'business_center_rounded': Icons.business_center_rounded,
@@ -41,5 +49,25 @@ class Category {
     };
 
     return iconMap[iconName] ?? Icons.category_rounded;
+  }
+
+  static IconData _getIconFromCategoryId(int categoryId) {
+    final Map<int, IconData> categoryIdMap = {
+      1: Icons.business_center_rounded,
+      2: Icons.card_giftcard_rounded,
+      3: Icons.monetization_on_rounded,
+      4: Icons.account_balance_rounded,
+      5: Icons.more_horiz_rounded,
+      6: Icons.fastfood_rounded,
+      7: Icons.train_rounded,
+      8: Icons.shopping_cart_rounded,
+      9: Icons.home_rounded,
+      10: Icons.receipt_long_rounded,
+      11: Icons.music_note_rounded,
+      12: Icons.school_rounded,
+      13: Icons.medical_services_rounded,
+    };
+
+    return categoryIdMap[categoryId] ?? Icons.category_rounded;
   }
 }

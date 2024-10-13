@@ -12,11 +12,15 @@ class SubmitFormEvent extends SetupEvent {
   final List<Map<String, dynamic>> monthlyExpenses;
   final double savingGoal;
   final int year;
+  final bool isEditing;
 
   SubmitFormEvent({
     required this.monthlyIncome,
     required this.monthlyExpenses,
     required this.savingGoal,
     required this.year,
+    this.isEditing = false,
   });
 }
+
+class LoadSetupDataEvent extends SetupEvent {}

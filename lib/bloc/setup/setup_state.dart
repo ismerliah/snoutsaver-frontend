@@ -21,3 +21,17 @@ class SavingGoalStepState extends SetupState {
 class SetupCompleteState extends SetupState {
   const SetupCompleteState() : super(currentStep: 3);
 }
+
+class SetupLoadedState extends SetupState {
+  final double monthlyIncome;
+  final double savingGoal;
+  final int year;
+  final List<Map<String, dynamic>> monthlyExpenses;
+
+  const SetupLoadedState({
+    required this.monthlyIncome,
+    required this.savingGoal,
+    required this.year,
+    required this.monthlyExpenses,
+  }) : super(currentStep: 0);
+}
