@@ -182,7 +182,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
 
-                            // SAVING INFORMATION BUTTON
+                            // EDIT SAVINGS SETUP BUTTON
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: ElevatedButton(
@@ -194,11 +194,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                   minimumSize: const Size(double.infinity, 40),
                                 ),
                                 onPressed: () {
-                                  // Handle sign out button click
-                                  print('Saving information button clicked');
+                                  Navigator.pushNamed(context, '/setup');
+                                  print('Edit Savings setup button clicked');
                                 },
                                 child: Text(
-                                  'Saving information',
+                                  'Edit Savings setup',
                                   style: GoogleFonts.outfit(
                                     textStyle: const TextStyle(
                                       fontSize: 16,
@@ -282,7 +282,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         )
                       : Column(
                           children: [
-                            // SAVING INFORMATION BUTTON
+                            // EDIT SAVINGS SETUP BUTTON
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: ElevatedButton(
@@ -294,11 +294,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                   minimumSize: const Size(double.infinity, 40),
                                 ),
                                 onPressed: () {
-                                  // Handle sign out button click
-                                  print('Saving information button clicked');
+                                  Navigator.pushNamed(context, '/setup');
+                                  print('Edit Savings setup button clicked');
                                 },
                                 child: Text(
-                                  'Saving information',
+                                  'Edit Savings setup',
                                   style: GoogleFonts.outfit(
                                     textStyle: const TextStyle(
                                       fontSize: 16,

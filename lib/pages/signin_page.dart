@@ -6,6 +6,7 @@ import 'package:form_field_validator/form_field_validator.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:snoutsaver/bloc/authentication/app_bloc.dart';
+import 'package:snoutsaver/repository/setup_repository.dart';
 import 'package:snoutsaver/widgets/dialogs/dialog.dart';
 import 'package:snoutsaver/widgets/loading.dart';
 
@@ -24,6 +25,21 @@ class _SigninPageState extends State<SigninPage> {
 
   final storage = const FlutterSecureStorage();
 
+  Future<void> _checkSetupData() async {
+    if (!mounted) return;
+
+    final setupRepository = SetupRepository();
+    final hasSetupData = await setupRepository.hasSetupData();
+
+    if (mounted) {
+      if (hasSetupData) {
+        Navigator.pushNamed(context, '/dashboard');
+      } else {
+        Navigator.pushNamed(context, '/setup');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +49,7 @@ class _SigninPageState extends State<SigninPage> {
           // Sign in
           if (state is SigninSuccess) {
             debugPrint('Signin Success');
-            Navigator.pushNamed(context, '/dashboard');
+            _checkSetupData();
 
           } else if (state is SigninFailure) {
             debugPrint("Signin Error: ${state.error}");
@@ -45,7 +61,7 @@ class _SigninPageState extends State<SigninPage> {
           // Sign in with Google
           } else if (state is SigninwithGoogleSuccess) {
             debugPrint('Sign in with Google Success');
-            Navigator.pushNamed(context, '/dashboard');
+            _checkSetupData();
 
           } else if (state is SigninwithGoogleFailure) {
             debugPrint('Sign in with Google Failure: ${state.error}');

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:snoutsaver/models/category.dart';
 import 'package:snoutsaver/repository/category_repository.dart';
@@ -162,7 +163,7 @@ class _RecordFormState extends State<RecordForm> {
             decoration: const InputDecoration(
               labelText: 'Amount',
               labelStyle: TextStyle(
-                fontSize: 18,
+                fontSize: 16,
               ),
               prefixIcon: Icon(
                 Icons.attach_money_rounded,
@@ -198,7 +199,7 @@ class _RecordFormState extends State<RecordForm> {
             decoration: InputDecoration(
               labelText: 'Category',
               labelStyle: const TextStyle(
-                fontSize: 18,
+                fontSize: 16,
               ),
               prefixIcon: Icon(
                 _selectedCategoryIcon,
@@ -234,7 +235,7 @@ class _RecordFormState extends State<RecordForm> {
             decoration: const InputDecoration(
               labelText: 'Date',
               labelStyle: TextStyle(
-                fontSize: 18,
+                fontSize: 16,
               ),
               prefixIcon: Icon(
                 Icons.calendar_month_rounded,
@@ -262,7 +263,7 @@ class _RecordFormState extends State<RecordForm> {
             decoration: const InputDecoration(
               labelText: 'Note',
               labelStyle: TextStyle(
-                fontSize: 18,
+                fontSize: 16,
               ),
               prefixIcon: Icon(
                 Icons.sticky_note_2_rounded,
@@ -304,9 +305,9 @@ class _RecordFormState extends State<RecordForm> {
                 ),
                 backgroundColor: const Color(0xFFFF90BC),
               ),
-              child: const Text(
+              child: Text(
                 'Save',
-                style: TextStyle(
+                style: GoogleFonts.outfit(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -378,10 +379,10 @@ class _RecordTabbarState extends State<RecordTabbar> {
                 child: Container(
                   width: 160,
                   alignment: Alignment.center,
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircleAvatar(
+                      const CircleAvatar(
                         backgroundColor: Color(0xFF9DCD5A),
                         radius: 16,
                         child: Icon(
@@ -390,10 +391,10 @@ class _RecordTabbarState extends State<RecordTabbar> {
                           size: 24,
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Text(
                         'Income',
-                        style: TextStyle(
+                        style: GoogleFonts.outfit(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
                           fontSize: 18,
@@ -409,10 +410,10 @@ class _RecordTabbarState extends State<RecordTabbar> {
                 child: Container(
                   width: 175,
                   alignment: Alignment.center,
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircleAvatar(
+                      const CircleAvatar(
                         backgroundColor: Color(0xFFFF5757),
                         radius: 16,
                         child: Icon(
@@ -421,10 +422,10 @@ class _RecordTabbarState extends State<RecordTabbar> {
                           size: 24,
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Text(
                         'Expense',
-                        style: TextStyle(
+                        style: GoogleFonts.outfit(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
                           fontSize: 18,

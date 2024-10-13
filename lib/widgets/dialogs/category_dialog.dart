@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:snoutsaver/models/category.dart';
 
 class CategoryDialog extends StatefulWidget {
@@ -23,9 +24,9 @@ class _CategoryDialogState extends State<CategoryDialog> {
     return AlertDialog(
       title: Stack(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text('Select Category'),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text('Select Category', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold)),
           ),
           Positioned(
             right: 0,
@@ -77,7 +78,7 @@ class _CategoryDialogState extends State<CategoryDialog> {
                   Text(
                     category.name,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 14.0),
+                    style: GoogleFonts.outfit(fontSize: 13.0),
                   )
                 ],
               ),
@@ -105,14 +106,14 @@ class _CategoryDialogState extends State<CategoryDialog> {
                 ),
                 backgroundColor: const Color(0xFFFF90BC),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.check, color: Color(0xFFFFFFFF)),
-                  SizedBox(width: 8),
+                  const Icon(Icons.check, color: Color(0xFFFFFFFF)),
+                  const SizedBox(width: 8),
                   Text(
                     'Done',
-                    style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 18),
+                    style: GoogleFonts.outfit(color: const Color(0xFFFFFFFF), fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
