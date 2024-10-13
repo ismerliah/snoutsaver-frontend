@@ -18,7 +18,7 @@ class DashboardPage extends StatelessWidget {
             icon: const Icon(Icons.person),
             onPressed: () {
               Navigator.pushNamed(context, '/profile');
-            }, // Add profile icon click event handler
+            },
           ),
         ],
       ),
@@ -26,32 +26,7 @@ class DashboardPage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // First clickable card box
-            Card(
-              child: InkWell(
-                onTap: () {}, // Add goals click event handler
-                child: const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Goals',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      LinearProgressIndicator(
-                        value: 0.5, // Replace with actual progress value
-                        backgroundColor: Colors.grey,
-                        valueColor: AlwaysStoppedAnimation(Colors.blue),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Second clickable card box
+            // TODAY
             Card(
               child: InkWell(
                 onTap: () {}, // Add today click event handler
@@ -100,7 +75,7 @@ class DashboardPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Third clickable card box
+            // MONTH clickable card box
             Card(
               child: InkWell(
                 onTap: () {}, // Add this month click event handler
@@ -150,6 +125,72 @@ class DashboardPage extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              // Display the Edit Pocket dialog
+              return EditPocketDialog();
+            },
+          );
+        },
+        child: const Icon(Icons.edit),
+        backgroundColor: const Color(0xFF8ACDD7),
+      ),
+    );
+  }
+}
+
+class EditPocketDialog extends StatefulWidget {
+  @override
+  _EditPocketDialogState createState() => _EditPocketDialogState();
+}
+
+class _EditPocketDialogState extends State<EditPocketDialog> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _balanceController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit Pocket'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(labelText: 'Name'),
+          ),
+          TextField(
+            controller: _balanceController,
+            decoration: const InputDecoration(labelText: 'Balance'),
+            keyboardType: TextInputType.number,
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(); // Close the dialog
+          },
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            // Handle the logic to save the pocket data (name and balance)
+            String name = _nameController.text;
+            String balance = _balanceController.text;
+
+            // For now, simply print the values
+            print('Pocket Name: $name');
+            print('Pocket Balance: $balance');
+
+            Navigator.of(context).pop(); // Close the dialog after saving
+          },
+          child: const Text('Save'),
+        ),
+      ],
     );
   }
 }
