@@ -48,6 +48,7 @@ class UserRepository {
     required String email,
     required String password,
     required String confirmPassword,
+    required String profile_picture,
   }) async {
     var response = await http.post(
       Uri.parse("http://10.0.2.2:8000/users/create"),
@@ -60,6 +61,7 @@ class UserRepository {
         "password": password,
         "confirm_password": confirmPassword,
         "provider": "google",
+        "profile_picture": profile_picture
       }),
     );
     if (response.statusCode == 200) {
@@ -126,9 +128,9 @@ class UserRepository {
   Future<void> updateUserDetail({
     required String email,
     required String username,
-    required String? first_name,
-    required String? last_name,
-    required String? profile_picture,
+    required String? firstName,
+    required String? lastName,
+    required String? profilePicture,
   }) async {
     try {
       String? token = await storage.read(key: "token");
@@ -144,9 +146,9 @@ class UserRepository {
         body: jsonEncode(<String, dynamic>{
           "email": email,
           "username": username,
-          "first_name": first_name,
-          "last_name": last_name,
-          "profile_picture": profile_picture,
+          "first_name": firstName,
+          "last_name": lastName,
+          "profile_picture": profilePicture,
         }),
       );
 
@@ -165,53 +167,37 @@ class UserRepository {
     }
   }
 
-  // Future<Map<String, dynamic>> fetchUserDetails() async {
-  //   try {
-  //     String? token = prefs?.getString('accesstoken');
-  //     if (token == null) {
-  //       throw Exception('No access token found');
-  //     }
-  //     var response = await http.get(
-  //     Uri.parse("http://10.0.2.2:8000/users/me"),
-  //     headers: {
-  //         'Authorization': 'Bearer $token',
-  //       },
-  //     );
+  Future<void> updatePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      String? token = await storage.read(key: "token");
+      final user = await UserRepository().fetchUserDetails();
+      final user_id = user.id.toString();
 
-  //     if (response.statusCode == 200) {
-  //       final Map<String, dynamic> result = jsonDecode(response.body);
-  //       return result['data'];
-  //     }
-  //     else {
-  //       throw Exception('Failed to load user details');
-  //     }
-  //   } catch (e) {
-  //     throw Exception(e);
-  //   }
-  // }
+      var response = await http.put(
+        Uri.parse("http://10.0.2.2:8000/users/$user_id/change_password"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(<String, dynamic>{
+           "current_password": currentPassword,
+           "new_password": newPassword
+        }),
+      );
 
-  //   Future<String> fetchUserDetails() async {
-  //   try {
-  //     final String? token = prefs?.getString('accesstoken');
-  //     if (token == null) {
-  //       throw Exception('No access token found');
-  //     }
-
-  //     var response = await http.get(
-  //       Uri.parse('http://10.0.2.2:8000/users/me'),
-  //       headers: {
-  //         'Authorization': 'Bearer $token',
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       return response.body;
-  //     } else {
-  //       throw Exception('Failed to load user details: ${response.body}');
-  //     }
-  //   } catch (e) {
-  //     // debugPrint('Error fetching user details: $e');
-  //     throw Exception(e);
-  //   }
-  // }
+      if (response.statusCode == 200) {
+        return;
+      } else if (response.statusCode == 400) {
+        final Map<String, dynamic> result = jsonDecode(response.body);
+        if (result['detail'] == "Current password is incorrect") {
+          throw Exception("Current password is incorrect");
+        }
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }

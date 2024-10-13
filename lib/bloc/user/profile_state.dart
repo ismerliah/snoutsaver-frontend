@@ -44,3 +44,16 @@ class UpdatePictureFailure extends ProfileState {
 }
 
 // change password
+
+class ChangePasswordLoading extends ProfileState {}
+
+class ChangePasswordSuccess extends ProfileState {}
+
+class ChangePasswordFailure extends ProfileState {
+  final String error;
+
+  ChangePasswordFailure({required this.error});
+
+  @override
+  String toString() => error;
+}

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:snoutsaver/bloc/user/app_bloc.dart';
 import 'package:snoutsaver/repository/profilepic_repository.dart';
@@ -18,8 +17,6 @@ class _SelectProfileDialogState extends State<SelectProfileDialog> {
   String? _selectedPicture;
   late final Future<List<String>> _picturesFuture =
       ProfilePicRepository().getAllPictures();
-
-  final storage = const FlutterSecureStorage();
 
   @override
   void initState() {

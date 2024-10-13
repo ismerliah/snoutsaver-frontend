@@ -33,7 +33,7 @@ class _SigninPageState extends State<SigninPage> {
           // Sign in
           if (state is SigninSuccess) {
             debugPrint('Signin Success');
-            Navigator.pushNamed(context, '/profile');
+            Navigator.pushNamed(context, '/dashboard');
 
           } else if (state is SigninFailure) {
             debugPrint("Signin Error: ${state.error}");
@@ -45,7 +45,7 @@ class _SigninPageState extends State<SigninPage> {
           // Sign in with Google
           } else if (state is SigninwithGoogleSuccess) {
             debugPrint('Sign in with Google Success');
-            Navigator.pushNamed(context, '/home');
+            Navigator.pushNamed(context, '/dashboard');
 
           } else if (state is SigninwithGoogleFailure) {
             debugPrint('Sign in with Google Failure: ${state.error}');

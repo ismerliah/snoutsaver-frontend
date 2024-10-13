@@ -43,8 +43,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     try {
       final user = await UserRepository().fetchUserDetails();
-      final token = await storage.read(key: "token");
-      print('token: $token');
+      // final token = await storage.read(key: "token");
+      // print('token: $token');
 
       setState(() {
         _usernameController.text = user.username;
@@ -235,15 +235,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       ),
                                       validator: (value) {
                                         // Username validation
-                                        final emailValidator = MultiValidator([
+                                        final usernameValidator =
+                                            MultiValidator([
                                           RequiredValidator(
                                               errorText: '* Required'),
                                         ]);
 
-                                        final emailValidationResult =
-                                            emailValidator.call(value);
-                                        if (emailValidationResult != null) {
-                                          return emailValidationResult;
+                                        final usernameValidationResult =
+                                            usernameValidator.call(value);
+                                        if (usernameValidationResult != null) {
+                                          return usernameValidationResult;
                                         }
 
                                         if (errorMessage ==
@@ -404,13 +405,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               _isLoading // Show loading indicator if saving
                                   ? const CircularProgressIndicator(
                                       color: Color(0xFFFF90BC),
-                                  )
+                                    )
                                   : Padding(
                                       padding: const EdgeInsets.all(5.0),
                                       child: SizedBox(
                                         width: double.infinity,
                                         child: ElevatedButton(
                                           onPressed: () {
+                                            setState(() {
+                                              errorMessage = null;
+                                            });
                                             if (_formkey.currentState!
                                                 .validate()) {
                                               context.read<ProfileBloc>().add(

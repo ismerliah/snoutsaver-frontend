@@ -6,6 +6,7 @@ import 'package:snoutsaver/bloc/setup/setup_bloc.dart';
 import 'package:snoutsaver/bloc/authentication/app_bloc.dart';
 import 'package:snoutsaver/bloc/user/app_bloc.dart';
 import 'package:snoutsaver/firebase_options.dart';
+import 'package:snoutsaver/pages/dashboard_page.dart';
 import 'package:snoutsaver/pages/editprofile_page.dart';
 import 'package:snoutsaver/pages/home_page.dart';
 import 'package:snoutsaver/pages/profile_page.dart';
@@ -54,7 +55,7 @@ class MainApp extends StatelessWidget {
 
               if (isTokenValid) {
                 if (hasSetupData) {
-                  return const ProfilePage(); // Change later
+                  return const DashboardPage(); // Change later
                 } else {
                   return SetupPage();
                 }
@@ -75,6 +76,7 @@ class MainApp extends StatelessWidget {
           '/setup': (context) => SetupPage(),
           '/profile': (context) => const ProfilePage(),
           '/editprofile': (context) => const EditProfilePage(),
+          '/dashboard': (context) => const DashboardPage(),
         },
       ),
     );

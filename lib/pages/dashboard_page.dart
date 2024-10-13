@@ -16,7 +16,9 @@ class DashboardPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
-            onPressed: () {}, // Add profile icon click event handler
+            onPressed: () {
+              Navigator.pushNamed(context, '/profile');
+            }, // Add profile icon click event handler
           ),
         ],
       ),

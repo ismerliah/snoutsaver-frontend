@@ -9,6 +9,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<FetchUserDetailEvent>(_onFetchUserDetail);
     on<UpdateUserDetailEvent>(_onUpdateUserDetail);
     on<UpdateProfilePictureEvent>(_onUpdateProfilePicture);
+    on<ChangePasswordEvent>(_onChangePassword);
   }
 
   Future<void> _onFetchUserDetail(FetchUserDetailEvent event, Emitter<ProfileState> emit) async {
@@ -26,9 +27,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       await UserRepository().updateUserDetail(
         email: event.email,
         username: event.username,
-        first_name: event.first_name,
-        last_name: event.last_name,
-        profile_picture: event.profile_picture
+        firstName: event.first_name,
+        lastName: event.last_name,
+        profilePicture: event.profile_picture
       );
       emit(UpdateUserLoading());
       emit(UpdateUserSuccess());
@@ -46,14 +47,27 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       await UserRepository().updateUserDetail(
         email: user.email,
         username: user.username,
-        first_name: user.firstName,
-        last_name: user.lastName,
-        profile_picture: event.profile_picture
+        firstName: user.firstName,
+        lastName: user.lastName,
+        profilePicture: event.profile_picture
       );
       
       emit(UpdatePictureSuccess());
     } catch (e) {
       emit(UpdatePictureFailure(error: e.toString().replaceAll('Exception: ', '')));
+    }
+  }
+
+  Future<void> _onChangePassword(ChangePasswordEvent event, Emitter<ProfileState> emit) async {
+    try {
+      emit(ChangePasswordLoading());
+      await UserRepository().updatePassword(
+        currentPassword: event.current_password, 
+        newPassword: event.new_password,
+      );
+      emit(ChangePasswordSuccess());
+    } catch (e) {
+      emit(ChangePasswordFailure(error: e.toString().replaceAll('Exception: ', '')));
     }
   }
 

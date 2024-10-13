@@ -72,6 +72,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
           email: firebaseUser.email!,
           password: firebaseUser.uid,
           confirmPassword: firebaseUser.uid,
+          profile_picture: firebaseUser.photoURL!,
         );
         
         // Sign in user

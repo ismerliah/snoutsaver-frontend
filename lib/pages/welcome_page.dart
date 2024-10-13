@@ -18,7 +18,7 @@ class WelcomePage extends StatelessWidget {
         listener: (context, state) {
           // sign in with google
           if (state is SigninwithGoogleSuccess) {
-            Navigator.pushNamed(context, '/home');
+            Navigator.pushNamed(context, '/dashboard');
           } else if (state is SigninwithGoogleFailure) {
             debugPrint('Sign in with Google Failure: ${state.error}');
             CreateDialog().showErrorDialog(context, 'Failed to sign in with Google. Please try again.');

@@ -56,7 +56,7 @@ class _SignupPageState extends State<SignupPage> {
           // Sign in with Google
           } else if (state is SigninwithGoogleSuccess) {
             debugPrint('Sign in with Google Success');
-            Navigator.pushNamed(context, '/home');
+            Navigator.pushNamed(context, '/dashboard');
 
           } else if (state is SigninwithGoogleFailure) {
             debugPrint('Sign in with Google Failure: ${state.error}');
