@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-// import 'package:snoutsaver/pages/signup_page.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:snoutsaver/bloc/authentication/app_bloc.dart';
@@ -24,6 +23,8 @@ class _SigninPageState extends State<SigninPage> {
 
   final storage = const FlutterSecureStorage();
 
+  String? errorMessage;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,8 +37,11 @@ class _SigninPageState extends State<SigninPage> {
             Navigator.pushNamed(context, '/dashboard');
 
           } else if (state is SigninFailure) {
-            debugPrint("Signin Error: ${state.error}");
-            CreateDialog().showErrorDialog(context, 'Invalid username or password');
+             setState(() {
+              errorMessage = "Invalid username or password";
+              debugPrint('Sign in Error: $errorMessage');
+            });
+            _formkey.currentState!.validate();
           
           } else if (state is SigninLoading) {
             debugPrint('Signin Loading...');
@@ -92,9 +96,22 @@ class _SigninPageState extends State<SigninPage> {
                           padding: const EdgeInsets.all(8.0),
                           child: TextFormField(
                             controller: _username,
-                            validator: MultiValidator([
-                              RequiredValidator(errorText: '* Required'),
-                            ]).call,
+                            validator: (value) {
+                              // Username validation
+                              final usernameValidator = MultiValidator([
+                                RequiredValidator(errorText: '* Required'),
+                              ]);
+
+                              final usernameValidationResult =
+                                  usernameValidator.call(value);
+                              if (usernameValidationResult != null) {
+                                return usernameValidationResult;
+                              } else if (errorMessage ==
+                                  'Invalid username or password') {
+                                return 'Invalid username or password';
+                              }
+                              return null;
+                            },
                             decoration: InputDecoration(
                               hintText: 'Username',
                               hintStyle: const TextStyle(
@@ -126,9 +143,22 @@ class _SigninPageState extends State<SigninPage> {
                           child: TextFormField(
                             controller: _password,
                             obscureText: !_isPasswordVisible,
-                            validator: MultiValidator([
-                              RequiredValidator(errorText: '* Required'),
-                            ]).call,
+                            validator: (value) {
+                              // Password validation
+                              final passwordValidator = MultiValidator([
+                                RequiredValidator(errorText: '* Required'),
+                              ]);
+
+                              final passwordValidationResult =
+                                  passwordValidator.call(value);
+                              if (passwordValidationResult != null) {
+                                return passwordValidationResult;
+                              } else if (errorMessage ==
+                                  'Invalid username or password') {
+                                return 'Invalid username or password';
+                              }
+                              return null;
+                            },
                             decoration: InputDecoration(
                               hintText: 'Password',
                               hintStyle: const TextStyle(
@@ -172,6 +202,9 @@ class _SigninPageState extends State<SigninPage> {
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
+                                setState(() {
+                                  errorMessage = null;
+                                });
                                 if (_formkey.currentState!.validate()) {
                                   context
                                       .read<AuthenticationBloc>()
@@ -269,6 +302,7 @@ class _SigninPageState extends State<SigninPage> {
                         //     ),
                         //   ],
                         // ),
+
                         // New user? Sign up
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,

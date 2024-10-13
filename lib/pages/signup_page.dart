@@ -270,21 +270,6 @@ class _SignupPageState extends State<SignupPage> {
                               // Password validation
                               final passwordValidator = MultiValidator([
                                 RequiredValidator(errorText: '* Required'),
-                                MinLengthValidator(8,
-                                    errorText:
-                                        'Password must be at least 8 characters'),
-                                PatternValidator(r'(?=.*[A-Z])',
-                                    errorText:
-                                        'Password must contain at least one upper letter'),
-                                PatternValidator(r'(?=.*[a-z])',
-                                    errorText:
-                                        'Password must contain at least one lower letter'),
-                                PatternValidator(r'(?=.*\d)',
-                                    errorText:
-                                        'Password must contain at least one digit'),
-                                PatternValidator(r'(?=.*[!@#$%^&*])',
-                                    errorText:
-                                        'Password must contain at least one special character'),
                               ]);
 
                               final passwordValidationResult =
@@ -391,7 +376,6 @@ class _SignupPageState extends State<SignupPage> {
                         //     ),
                         //   ],
                         // ),
-                        // New user? Sign up
 
                         //or
                         Padding(
