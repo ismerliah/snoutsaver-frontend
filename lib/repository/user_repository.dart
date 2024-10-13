@@ -167,6 +167,35 @@ class UserRepository {
     }
   }
 
+  Future<void> updateProfilePicture({
+    required String? profilePicture,
+  }) async {
+    try {
+      String? token = await storage.read(key: "token");
+      final user = await UserRepository().fetchUserDetails();
+      final user_id = user.id.toString();
+
+      var response = await http.put(
+        Uri.parse("http://10.0.2.2:8000/users/$user_id/update_profile_picture"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(<String, dynamic>{
+          "profile_picture": profilePicture,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return;
+      } else {
+        throw Exception("Failed to update profile picture: ${response.body}");
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   Future<void> updatePassword({
     required String currentPassword,
     required String newPassword,

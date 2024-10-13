@@ -42,13 +42,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     try {
       emit(UpdatePictureLoading());
 
-      final user = await UserRepository().fetchUserDetails();
-
-      await UserRepository().updateUserDetail(
-        email: user.email,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
+      await UserRepository().updateProfilePicture(
         profilePicture: event.profile_picture
       );
       

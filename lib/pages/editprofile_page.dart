@@ -129,7 +129,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               color: Colors.white,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                  width: 5, color: const Color(0xFFffca4d)),
+                                  width: 8, color: const Color(0xFFffca4d)),
                             ),
                             child: ClipOval(
                               child: imgUrl != null && imgUrl!.isNotEmpty
@@ -148,8 +148,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             ),
                           ),
                           Positioned(
-                            bottom: 0,
-                            right: 0,
+                            bottom: 3,
+                            right: 3,
                             child: GestureDetector(
                               onTap: () async {
                                 // Handle profile picture selection
