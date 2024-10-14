@@ -2,11 +2,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:snoutsaver/bloc/dashboard/pocket_bloc.dart';
+import 'package:snoutsaver/bloc/pocket/pocket_bloc.dart';
 import 'package:snoutsaver/bloc/setup/setup_bloc.dart';
 import 'package:snoutsaver/bloc/authentication/app_bloc.dart';
 import 'package:snoutsaver/bloc/user/app_bloc.dart';
 import 'package:snoutsaver/firebase_options.dart';
+import 'package:snoutsaver/pages/allpocket_page.dart';
 import 'package:snoutsaver/pages/month_summary_page.dart';
 import 'package:snoutsaver/pages/pocketdashboard_page.dart';
 import 'package:snoutsaver/pages/editprofile_page.dart';
@@ -62,7 +63,7 @@ class MainApp extends StatelessWidget {
 
               if (isTokenValid) {
                 if (hasSetupData) {
-                  return const DashboardPage();
+                  return const AllPocketPage();
                 } else {
                   return const SetupPage();
                 }
@@ -85,7 +86,8 @@ class MainApp extends StatelessWidget {
           '/editprofile': (context) => const EditProfilePage(),
           '/dashboard': (context) => const DashboardPage(),
           '/today' : (context) => const TodaySummaryPage(),
-          '/month' : (context) => const MonthSummaryPage()
+          '/month' : (context) => const MonthSummaryPage(),
+          '/allpocket' : (context) => const AllPocketPage()
         },
       ),
     );

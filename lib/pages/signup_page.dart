@@ -35,7 +35,7 @@ class _SignupPageState extends State<SignupPage> {
 
     if (mounted) {
       if (hasSetupData) {
-        Navigator.pushNamed(context, '/dashboard');
+        Navigator.pushNamed(context, '/allpocket');
       } else {
         Navigator.pushNamed(context, '/setup');
       }

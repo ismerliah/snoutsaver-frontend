@@ -15,7 +15,7 @@ class WelcomePage extends StatelessWidget {
     final setupRepository = SetupRepository();
     final hasSetupData = await setupRepository.hasSetupData();
     if (hasSetupData) {
-      Navigator.pushNamed(context, '/dashboard');
+      Navigator.pushNamed(context, '/allpocket');
     } else {
       Navigator.pushNamed(context, '/setup');
     }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:snoutsaver/bloc/pocket/pocket_bloc.dart';
+import 'package:snoutsaver/bloc/pocket/pocket_event.dart';
 import 'package:snoutsaver/bloc/setup/setup_bloc.dart';
 import 'package:snoutsaver/models/category.dart';
 import 'package:snoutsaver/repository/setup_repository.dart';
@@ -216,11 +218,21 @@ class _SetupPageState extends State<SetupPage> {
                                           .read<SetupBloc>()
                                           .add(NextStepEvent());
                                     } else {
+                                      double sumMonthlyExpenses = 0;
+                                      for (final controller in _expenseControllers) {
+                                        final amount = double.tryParse(controller.text) ?? 0;
+                                        sumMonthlyExpenses += amount;
+                                      }
                                       final List<Map<String, dynamic>>
                                           monthlyExpenses = [];
+                                      // final double monthlyExpensesSum;
                                       for (int i = 0;
                                           i < _expenseControllers.length;
                                           i++) {
+                                            // final monthlyExpensesSum = _expenseControllers.fold<double>(
+                                            //   0,
+                                            //   (previousValue, element) => previousValue + double.parse(element.text),
+                                            // );
                                         monthlyExpenses.add({
                                           "amount": double.parse(
                                               _expenseControllers[i].text),
@@ -241,8 +253,15 @@ class _SetupPageState extends State<SetupPage> {
                                               isEditing: isEditing,
                                             ),
                                           );
+                                        
+                                        context.read<PocketBloc>().add(
+                                          CreateSetupPocketEvent(
+                                            name: 'Setup Pocket', 
+                                            balance: double.parse(
+                                                  _incomeController.text) - sumMonthlyExpenses, 
+                                            monthlyExpenses: monthlyExpenses));
                                       Navigator.pushNamed(
-                                          context, '/dashboard');
+                                          context, '/allpocket');
                                     }
                                   }
                                 },
