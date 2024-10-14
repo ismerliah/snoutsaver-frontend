@@ -14,6 +14,7 @@ import 'package:snoutsaver/pages/profile_page.dart';
 import 'package:snoutsaver/pages/setup_page.dart';
 import 'package:snoutsaver/pages/signin_page.dart';
 import 'package:snoutsaver/pages/signup_page.dart';
+import 'package:snoutsaver/pages/today_summary_page.dart';
 import 'package:snoutsaver/pages/welcome_page.dart';
 import 'package:snoutsaver/repository/setup_repository.dart';
 
@@ -82,6 +83,7 @@ class MainApp extends StatelessWidget {
           '/profile': (context) => const ProfilePage(),
           '/editprofile': (context) => const EditProfilePage(),
           '/dashboard': (context) => const DashboardPage(),
+          '/today' : (context) => const TodaySummaryPage(),
         },
       ),
     );

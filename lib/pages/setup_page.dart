@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,7 +30,7 @@ class _SetupPageState extends State<SetupPage> {
     if (amount == amount.toInt()) {
       return amount.toInt().toString();
     } else {
-      return amount.toString();
+      return amount.toStringAsFixed(2);
     }
   }
 

@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:snoutsaver/bloc/record/record_bloc.dart';
 import 'package:snoutsaver/models/category.dart';
+import 'package:snoutsaver/models/record.dart';
 import 'package:snoutsaver/repository/category_repository.dart';
 import 'package:snoutsaver/widgets/dialogs/category_dialog.dart';
 
 class RecordBottomsheet extends StatefulWidget {
-  const RecordBottomsheet({super.key});
+  final Record? record;
+  const RecordBottomsheet({super.key, this.record});
 
   @override
   State<RecordBottomsheet> createState() => _RecordBottomsheetState();
@@ -17,6 +21,15 @@ class RecordBottomsheet extends StatefulWidget {
 class _RecordBottomsheetState extends State<RecordBottomsheet> {
   int _currentIndex = 0;
   final GlobalKey<_RecordFormState> _recordFormKey = GlobalKey<_RecordFormState>();
+  bool get isEditMode => widget.record != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.record != null) {
+      _currentIndex = widget.record!.type == 'Income' ? 0 : 1;
+    }
+  }
 
   void _onTabChanged(int index) {
     setState(() {
@@ -28,35 +41,42 @@ class _RecordBottomsheetState extends State<RecordBottomsheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Drag bar
-            Center(
-              child: Container(
-                width: 80,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF7F7F7F),
-                  borderRadius: BorderRadius.circular(10),
+    return BlocProvider(
+      create: (context) => RecordBloc(),
+      child: Container(
+        decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: Container(
+                  width: 80,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF7F7F7F),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            RecordTabbar(onTabChanged: _onTabChanged, resetForm: _recordFormKey.currentState?.resetForm),
-            const SizedBox(height: 24),
-            Expanded(
-              child: _currentIndex == 0
-                  ? RecordForm(key: _recordFormKey, isIncome: true)
-                  : RecordForm(key: _recordFormKey, isIncome: false),
-            ),
-          ],
+              const SizedBox(height: 24),
+              RecordTabbar(
+                onTabChanged: _onTabChanged,
+                resetForm: _recordFormKey.currentState?.resetForm,
+              ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: RecordForm(
+                  key: _recordFormKey,
+                  isIncome: _currentIndex == 0,
+                  record: widget.record,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -65,7 +85,9 @@ class _RecordBottomsheetState extends State<RecordBottomsheet> {
 
 class RecordForm extends StatefulWidget {
   final bool isIncome;
-  const RecordForm({required this.isIncome, super.key});
+  final Record? record;
+
+  const RecordForm({required this.isIncome, this.record, super.key});
 
   @override
   State<RecordForm> createState() => _RecordFormState();
@@ -80,13 +102,39 @@ class _RecordFormState extends State<RecordForm> {
   IconData _selectedCategoryIcon = Icons.category_rounded;
   DateTime? _selectedDate;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // Set default date to today
-  //   _selectedDate = DateTime.now();
-  //   _dateController.text = DateFormat('dd MMM, yyyy').format(_selectedDate!);
-  // }
+  late String _selectedType;
+  Category? _selectedCategory;
+
+  String formatAmount(double amount) {
+    if (amount == amount.toInt()) {
+      return amount.toInt().toString();
+    } else {
+      return amount.toStringAsFixed(2);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedType = widget.isIncome ? 'Income' : 'Expense';
+
+    // If in "edit" mode, populate the form with existing data
+    if (widget.record != null) {
+      final record = widget.record!;
+      _amountController.text = formatAmount(record.amount);
+      _selectedCategory = Category(
+        id: record.categoryId,
+        name: record.category,
+        type: record.type,
+        icon: Category.convertIcon(record.categoryId, record.category),
+      );
+      _categoryController.text = record.category;
+      _noteController.text = record.description ?? '';
+      _selectedDate = record.recordDate;
+      _dateController.text = DateFormat('dd MMM, yyyy').format(_selectedDate!);
+      _selectedCategoryIcon = Icons.category_rounded;
+    }
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -117,7 +165,9 @@ class _RecordFormState extends State<RecordForm> {
   void _selectCategory(BuildContext context) async {
     List<Category> allCategories = await CategoryRepository().fetchCategories();
     List<Category> filteredCategories = allCategories
-        .where((category) => widget.isIncome ? category.type == 'Income' : category.type == 'Expense')
+        .where((category) => widget.isIncome
+            ? category.type == 'Income'
+            : category.type == 'Expense')
         .toList();
 
     showDialog(
@@ -127,6 +177,7 @@ class _RecordFormState extends State<RecordForm> {
           categories: filteredCategories,
           onCategorySelected: (Category selectedCategory) {
             setState(() {
+              _selectedCategory = selectedCategory;
               _categoryController.text = selectedCategory.name;
               _selectedCategoryIcon = selectedCategory.icon;
             });
@@ -146,176 +197,164 @@ class _RecordFormState extends State<RecordForm> {
     setState(() {
       _selectedCategoryIcon = Icons.category_rounded;
       _selectedDate = null;
+      _selectedCategory = null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          // Amount
-          TextFormField(
-            controller: _amountController,
-            decoration: const InputDecoration(
-              labelText: 'Amount',
-              labelStyle: TextStyle(
-                fontSize: 16,
-              ),
-              prefixIcon: Icon(
-                Icons.attach_money_rounded,
-                color: Color(0xFF8ACDD7),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                borderSide: BorderSide(
-                  color: Color(0xFFff90BC),
-                  width: 2.0,
+    return BlocListener<RecordBloc, RecordState>(
+      listener: (context, state) {
+        if (state is RecordSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+          Navigator.pop(context);
+        } else if (state is RecordFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${state.error}')),
+          );
+        }
+      },
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            // Amount
+            TextFormField(
+              controller: _amountController,
+              decoration: const InputDecoration(
+                labelText: 'Amount',
+                prefixIcon: Icon(
+                  Icons.attach_money_rounded,
+                  color: Color(0xFF8ACDD7),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
                 ),
               ),
-              floatingLabelBehavior: FloatingLabelBehavior.never,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              validator: RequiredValidator(errorText: '* Required').call,
+              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
             ),
-            keyboardType: TextInputType.number,
-            validator: RequiredValidator(errorText: '* Required').call,
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly
-            ],
-          ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-          // Category
-          TextFormField(
-            controller: _categoryController,
-            readOnly: true,
-            onTap: () {
-              _selectCategory(context);
-            },
-            decoration: InputDecoration(
-              labelText: 'Category',
-              labelStyle: const TextStyle(
-                fontSize: 16,
-              ),
-              prefixIcon: Icon(
-                _selectedCategoryIcon,
-                color: const Color(0xFF8ACDD7),
-              ),
-              suffixIcon: const Icon(
-                Icons.expand_more_rounded,
-                color: Color(0xFF8ACDD7),
-              ),
-              border: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              ),
-              focusedBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                borderSide: BorderSide(
-                  color: Color(0xFFff90BC),
-                  width: 2.0,
-                ),
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.never,
-            ),
-            validator: RequiredValidator(errorText: '* Required').call,
-          ),
-          const SizedBox(height: 24),
-
-          // Date
-          TextFormField(
-            controller: _dateController,
-            readOnly: true,
-            onTap: () {
-              _selectDate(context);
-            },
-            decoration: const InputDecoration(
-              labelText: 'Date',
-              labelStyle: TextStyle(
-                fontSize: 16,
-              ),
-              prefixIcon: Icon(
-                Icons.calendar_month_rounded,
-                color: Color(0xFF8ACDD7),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                borderSide: BorderSide(
-                  color: Color(0xFFff90BC),
-                  width: 2.0,
-                ),
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.never,
-            ),
-            validator: RequiredValidator(errorText: '* Required').call,
-          ),
-          const SizedBox(height: 24),
-
-          // Note
-          TextFormField(
-            controller: _noteController,
-            decoration: const InputDecoration(
-              labelText: 'Note',
-              labelStyle: TextStyle(
-                fontSize: 16,
-              ),
-              prefixIcon: Icon(
-                Icons.sticky_note_2_rounded,
-                color: Color(0xFF8ACDD7),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                borderSide: BorderSide(
-                  color: Color(0xFFff90BC),
-                  width: 2.0,
-                ),
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.never,
-            ),
-            keyboardType: TextInputType.text,
-            validator: MaxLengthValidator(100,
-                    errorText: '* Maximum 100 characters allowed')
-                .call,
-          ),
-          const SizedBox(height: 32),
-
-          // Save button
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  // TODO: Save record
-                  Navigator.pop(context);
-                }
+            // Category
+            TextFormField(
+              controller: _categoryController,
+              readOnly: true,
+              onTap: () {
+                _selectCategory(context);
               },
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+              decoration: InputDecoration(
+                labelText: 'Category',
+                prefixIcon: Icon(_selectedCategoryIcon, color: const Color(0xFF8ACDD7)),
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
                 ),
-                backgroundColor: const Color(0xFFFF90BC),
               ),
-              child: Text(
-                'Save',
-                style: GoogleFonts.outfit(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              validator: RequiredValidator(errorText: '* Required').call,
+            ),
+            const SizedBox(height: 24),
+
+            // Date
+            TextFormField(
+              controller: _dateController,
+              readOnly: true,
+              onTap: () {
+                _selectDate(context);
+              },
+              decoration: const InputDecoration(
+                labelText: 'Date',
+                prefixIcon: Icon(Icons.calendar_month_rounded, color: Color(0xFF8ACDD7)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                ),
+              ),
+              validator: RequiredValidator(errorText: '* Required').call,
+            ),
+            const SizedBox(height: 24),
+
+            // Note
+            TextFormField(
+              controller: _noteController,
+              decoration: const InputDecoration(
+                labelText: 'Note',
+                prefixIcon: Icon(Icons.sticky_note_2_rounded, color: Color(0xFF8ACDD7)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                ),
+              ),
+              keyboardType: TextInputType.text,
+              validator: MaxLengthValidator(100, errorText: '* Maximum 100 characters allowed').call,
+            ),
+            const SizedBox(height: 32),
+
+            // Save button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    if (_selectedCategory == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please select a category')),
+                      );
+                      return;
+                    }
+
+                    if (widget.record == null) {
+                      // If creating a new record
+                      context.read<RecordBloc>().add(
+                        CreateRecordEvent(
+                          type: _selectedType,
+                          amount: double.parse(_amountController.text),
+                          categoryId: _selectedCategory!.id.toString(),
+                          categoryName: _selectedCategory!.name,
+                          description: _noteController.text.isNotEmpty
+                              ? _noteController.text
+                              : null,
+                          recordDate: _selectedDate!,
+                        ),
+                      );
+                    } else {
+                      // If editing an existing record
+                      context.read<RecordBloc>().add(
+                        UpdateRecordEvent(
+                          recordId: widget.record!.id,
+                          type: _selectedType,
+                          amount: double.parse(_amountController.text),
+                          categoryId: _selectedCategory!.id.toString(),
+                          categoryName: _selectedCategory!.name,
+                          description: _noteController.text.isNotEmpty
+                              ? _noteController.text
+                              : null,
+                          recordDate: _selectedDate!,
+                        ),
+                      );
+                    }
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  backgroundColor: const Color(0xFFFF90BC),
+                ),
+                child: Text(
+                  'Save',
+                  style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -358,9 +397,7 @@ class _RecordTabbarState extends State<RecordTabbar> {
         children: [
           // Animated indicator for selected tab
           AnimatedAlign(
-            alignment: _currentIndex == 0
-                ? Alignment.centerLeft
-                : Alignment.centerRight,
+            alignment: _currentIndex == 0 ? Alignment.centerLeft : Alignment.centerRight,
             duration: const Duration(milliseconds: 200),
             child: Container(
               width: 175,

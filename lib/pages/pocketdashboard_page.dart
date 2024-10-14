@@ -29,7 +29,9 @@ class DashboardPage extends StatelessWidget {
             // TODAY
             Card(
               child: InkWell(
-                onTap: () {}, // Add today click event handler
+                onTap: () {
+                   Navigator.pushNamed(context, '/today');
+                },
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
