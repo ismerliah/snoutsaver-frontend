@@ -1,13 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:snoutsaver/bloc/dashboard/pocket_bloc.dart';
-import 'package:snoutsaver/bloc/dashboard/pocket_event.dart';
-import 'package:snoutsaver/bloc/dashboard/pocket_state.dart';
+import 'package:snoutsaver/bloc/pocket/pocket_bloc.dart';
+import 'package:snoutsaver/bloc/pocket/pocket_event.dart';
+import 'package:snoutsaver/bloc/pocket/pocket_state.dart';
+import 'package:snoutsaver/repository/pocket_repository.dart';
+import 'package:snoutsaver/widgets/loading.dart';
 
 import '../models/pocket.dart';
 
-class WalletPage extends StatelessWidget {
-  const WalletPage({super.key});
+class AllPocketPage extends StatefulWidget {
+  const AllPocketPage({super.key});
+
+  @override
+  State<AllPocketPage> createState() => _AllPocketPageState();
+}
+
+class _AllPocketPageState extends State<AllPocketPage> {
+
+  @override
+void initState() {
+  super.initState();
+  context.read<PocketBloc>().add(LoadedPocketsEvent());
+}
+
+  // Future<void> _fetchPockets() async {
+  //   try {
+  //     final pocket = await PocketRepository().fetchPockets();
+
+
+  //   } catch (e) {
+  //     print(e.toString());
+  //   }
+  // }
+  
+  @override
+  State<AllPocketPage> createState() => _AllPocketPageState();
 
   @override
   Widget build(BuildContext context) {
@@ -15,78 +42,85 @@ class WalletPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("All Wallets"),
       ),
-      body: BlocBuilder<PocketBloc, PocketState>(
-        builder: (context, state) {
-          if (state is PocketInitial) {
-            return const Center(child: Text("No wallets added yet."));
-          } else if (state is PocketLoaded) {
-            return Column(
-              children: [
-                // Display the goals progress bar
-                Card(
-                  child: InkWell(
-                    onTap: () {
-                      // Add any click event handler here (edit saving goal?)
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            'Goals',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                              height:
-                                  8), // Add space between text and progress bar
-                          LinearProgressIndicator(
-                            value:
-                                0.5, // Replace with actual progress value from your data
-                            backgroundColor: Colors.grey,
-                            valueColor: AlwaysStoppedAnimation(Colors.blue),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                // Display the list of wallets
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: state.pockets.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(state.pockets[index].name),
-                        subtitle: Text('${state.pockets[index].balance} ฿'),
-                      );
-                    },
-                  ),
-                ),
-                // Button to add a new wallet
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: GestureDetector(
-                    onTap: () => _showAddWalletDialog(context),
-                    child: Container(
-                      height: 50,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.add),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          } else {
-            return const Center(child: Text("Error loading wallets."));
+      body: BlocConsumer<PocketBloc, PocketState>(
+        listener: (context, state) {
+          if (state is PocketFailure) {
+            print(state.error);
+          } else if(state is PocketLoading) {
+            print("Loading...");
           }
         },
+        builder: (context, state) {
+  if (state is PocketLoading) {
+    return const Loading(); // Use your custom loading widget
+  } else if (state is PocketLoaded) {
+    final pockets = state.pockets; // Access pockets from PocketLoaded state
+    return Column(
+      children: [
+        // Display the goals progress bar
+        Card(
+          child: InkWell(
+            onTap: () {
+              // Add any click event handler here (edit saving goal?)
+            },
+            child: const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Text(
+                    'Goals',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                      height: 8), // Add space between text and progress bar
+                  LinearProgressIndicator(
+                    value: 0.5, // Replace with actual progress value from your data
+                    backgroundColor: Colors.grey,
+                    valueColor: AlwaysStoppedAnimation(Colors.blue),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        // Display the list of wallets
+        Expanded(
+          child: ListView.builder(
+            itemCount: pockets.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(pockets[index].name),
+                subtitle: Text('${pockets[index].balance} ฿'),
+              );
+            },
+          ),
+        ),
+        // Button to add a new wallet
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: GestureDetector(
+            onTap: () => _showAddWalletDialog(context),
+            child: Container(
+              height: 50,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.add),
+            ),
+          ),
+        ),
+      ],
+    );
+  } else {
+    return const Text('Error loading pockets');
+  }
+},
+
       ),
     );
   }
@@ -162,14 +196,14 @@ class _AddWalletDialogState extends State<AddWalletDialog> {
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
-              final wallet = Pocket(
-                name: name,
-                balance: balance,
-                monthlyExpense: monthlyExpense,
-              );
-              // Add the wallet using BLoC
-              context.read<PocketBloc>().add(AddPocket(wallet));
-              Navigator.of(context).pop();
+              // // final wallet = Pocket(
+              // //   name: name,
+              // //   balance: balance,
+              // //   // monthlyExpense: monthlyExpense,
+              // // );
+              // // Add the wallet using BLoC
+              // context.read<PocketBloc>().add(AddPocket(wallet));
+              // Navigator.of(context).pop();
             }
           },
           child: const Text('Save'),
