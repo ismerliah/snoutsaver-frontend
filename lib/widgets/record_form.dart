@@ -35,8 +35,9 @@ class _RecordBottomsheetState extends State<RecordBottomsheet> {
     setState(() {
       _currentIndex = index;
     });
-    // Reset form when tab changes
-    _recordFormKey.currentState?.resetForm();
+    if(!isEditMode) {
+      _recordFormKey.currentState?.resetForm();
+    }
   }
 
   @override
