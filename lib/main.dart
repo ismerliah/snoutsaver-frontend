@@ -7,6 +7,7 @@ import 'package:snoutsaver/bloc/setup/setup_bloc.dart';
 import 'package:snoutsaver/bloc/authentication/app_bloc.dart';
 import 'package:snoutsaver/bloc/user/app_bloc.dart';
 import 'package:snoutsaver/firebase_options.dart';
+import 'package:snoutsaver/pages/month_summary_page.dart';
 import 'package:snoutsaver/pages/pocketdashboard_page.dart';
 import 'package:snoutsaver/pages/editprofile_page.dart';
 import 'package:snoutsaver/pages/home_page.dart';
@@ -84,6 +85,7 @@ class MainApp extends StatelessWidget {
           '/editprofile': (context) => const EditProfilePage(),
           '/dashboard': (context) => const DashboardPage(),
           '/today' : (context) => const TodaySummaryPage(),
+          '/month' : (context) => const MonthSummaryPage()
         },
       ),
     );

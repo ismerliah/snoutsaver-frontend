@@ -80,7 +80,9 @@ class DashboardPage extends StatelessWidget {
             // MONTH clickable card box
             Card(
               child: InkWell(
-                onTap: () {}, // Add this month click event handler
+                onTap: () {
+                  Navigator.pushNamed(context, '/month');
+                },
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -137,8 +139,8 @@ class DashboardPage extends StatelessWidget {
             },
           );
         },
-        child: const Icon(Icons.edit),
         backgroundColor: const Color(0xFF8ACDD7),
+        child: const Icon(Icons.edit),
       ),
     );
   }

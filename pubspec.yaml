@@ -24,6 +24,7 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   meta: ^1.12.0
   flutter_slidable: ^3.1.1
+  fl_chart: ^0.69.0
 
 dev_dependencies:
   flutter_test:
