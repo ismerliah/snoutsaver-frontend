@@ -35,6 +35,6 @@ class CreatedPocketFailure extends PocketState {
 class PocketLoaded extends PocketState {
   final List<Pocket> pockets;
   
-  PocketLoaded(this.pockets);
+  const PocketLoaded(this.pockets);
 }
 

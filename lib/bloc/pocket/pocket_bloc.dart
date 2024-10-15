@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:snoutsaver/repository/pocket_repository.dart';
 import 'pocket_event.dart';
 import 'pocket_state.dart';
-import '../../models/pocket.dart';
 
 class PocketBloc extends Bloc<PocketEvent, PocketState> {
   PocketBloc() : super(PocketInitial()) {
@@ -25,9 +24,9 @@ class PocketBloc extends Bloc<PocketEvent, PocketState> {
   }
 
   void _onLoadedPockets(LoadedPocketsEvent event, Emitter<PocketState> emit) async {
-    try {
       emit(PocketLoading());
-      await PocketRepository().fetchPockets();
+    try {
+      final pockets = await PocketRepository().fetchPockets();
       emit(PocketLoaded(pockets));
     } catch(e) {
       emit(PocketFailure(error: e.toString().replaceAll('Exception: ', '')));

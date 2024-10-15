@@ -1,10 +1,12 @@
 class Pocket {
   final int id;
-  final String? name;
+  final int? user_id;
+  final String name;
   final double balance;
 
   const Pocket({
     required this.id,
+    this.user_id,
     required this.name,
     required this.balance,
   });
@@ -12,6 +14,7 @@ class Pocket {
   factory Pocket.fromJson(Map<String, dynamic> json) {
     return Pocket(
       id: json['id'] as int,
+      user_id: json['user_id'] as int?,
       name: json['name'] as String,
       balance: json['balance'] as double,
     );
