@@ -98,94 +98,139 @@ class _AllPocketPageState extends State<AllPocketPage> {
           } else if (state is PocketLoaded) {
             final pockets =
                 state.pockets; // Access pockets from PocketLoaded state
-            return Column(
-              children: [
-                // Display the goals progress bar
-                Card(
-                  child: InkWell(
-                    onTap: () {
-                      // Add any click event handler here (edit saving goal?)
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            'Goals',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                              height:
-                                  8), // Add space between text and progress bar
-                          LinearProgressIndicator(
-                            minHeight: 15,
-                            value:
-                                0.5, // Replace with actual progress value from your data
-                            backgroundColor: Colors.grey,
-                            valueColor: AlwaysStoppedAnimation(Colors.blue),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                // Display the list of wallets
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ListView.builder(
-                      itemCount: pockets.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          tileColor: Colors.white,
-                          title: Text(
-                            pockets[index].name ?? 'Pocket',
-                            style: GoogleFonts.outfit(
-                              textStyle: const TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          subtitle: Text(
-                            '${pockets[index].balance} ฿',
-                            style: GoogleFonts.outfit(
-                              textStyle: const TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.black,
-                                  ),
-                            ),
-                          ),
-                          onTap: () {
-                            // Handle the logic to edit the pocket data (name and balance)
-                            Navigator.pushNamed(context, '/dashboard');
-                          },
-                        );
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  // Display the goals progress bar
+                  Card(
+                    child: InkWell(
+                      onTap: () {
+                        // Add any click event handler here (edit saving goal?)
                       },
-                    ),
-                  ),
-                ),
-
-                // Button to add a new wallet
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: GestureDetector(
-                    onTap: () => _showAddWalletDialog(context),
-                    child: Container(
-                      height: 50,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(10),
+                      child: const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Goals',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                                height:
+                                    8), // Add space between text and progress bar
+                            LinearProgressIndicator(
+                              minHeight: 15,
+                              value:
+                                  0.5, // Replace with actual progress value from your data
+                              backgroundColor: Colors.grey,
+                              valueColor: AlwaysStoppedAnimation(Colors.blue),
+                            ),
+                          ],
+                        ),
                       ),
-                      child: const Icon(Icons.add),
                     ),
                   ),
-                ),
-              ],
+                  // Display the list of wallets
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2, // 2 items per row
+                          crossAxisSpacing:
+                              16.0, // Horizontal space between tiles
+                          mainAxisSpacing: 16.0, // Vertical space between tiles
+                          childAspectRatio: 1.0, // Square tiles
+                        ),
+                        itemCount: pockets.length +
+                            1, // Add 1 for the "Add Wallet" button
+                        itemBuilder: (context, index) {
+                          if (index == pockets.length) {
+                            // Add "New Wallet" Button as the last item
+                            return GestureDetector(
+                              onTap: () => _showAddWalletDialog(context),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(16.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: const Center(
+                                  child: Icon(Icons.add,
+                                      size: 40, color: Colors.black54),
+                                ),
+                              ),
+                            );
+                          } else {
+                            // Display wallet tiles
+                            return GestureDetector(
+                              onTap: () {
+                                // Navigate to dashboard or handle wallet editing
+                                Navigator.pushNamed(context, '/dashboard');
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      pockets[index].name ?? 'Pocket',
+                                      style: GoogleFonts.outfit(
+                                        textStyle: const TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                    Text(
+                                      '${pockets[index].balance} ฿',
+                                      style: GoogleFonts.outfit(
+                                        textStyle: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             );
           } else {
             print("Unknown state: $state"); // Debugging line
