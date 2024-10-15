@@ -44,7 +44,8 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _fetchPockets() async {
     try {
       final pocket = await PocketRepository().fetchPockets();
-      final currentpocket = int.parse(await storage.read(key: "currentPocket") ?? '0');
+      final currentpocket =
+          int.parse(await storage.read(key: "currentPocket") ?? '0');
 
       print("currentpocket : $currentpocket");
       // print('token: $token');
@@ -62,12 +63,14 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF8ACDD7),
       appBar: AppBar(
+        elevation: 2,
+        shadowColor: Colors.black45,
         toolbarHeight: MediaQuery.of(context).size.height * 0.1,
         title: Text(
           name ?? '',
           style: GoogleFonts.outfit(
             textStyle: const TextStyle(
-                fontSize: 30, color: Colors.black, fontWeight: FontWeight.bold),
+                fontSize: 32, color: Colors.black, fontWeight: FontWeight.w600),
           ),
         ),
         leading: IconButton(
@@ -88,12 +91,19 @@ class _DashboardPageState extends State<DashboardPage> {
                 Navigator.pushNamed(context, '/profile');
               },
               child: Container(
-                width: 40,
-                height: 40,
+                width: 45,
+                height: 45,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.circle,
-                  border: Border.all(width: 4, color: const Color(0xFFffca4d)),
+                  border: Border.all(width: 3, color: const Color(0xFFffca4d)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 6,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: ClipOval(
                   child: imgUrl != null && imgUrl!.isNotEmpty
@@ -115,44 +125,53 @@ class _DashboardPageState extends State<DashboardPage> {
           children: [
             // TODAY
             Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              elevation: 5,
+              shadowColor: Colors.black45,
               child: InkWell(
                 onTap: () {
-                   Navigator.pushNamed(context, '/today');
+                  Navigator.pushNamed(context, '/today');
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         'Today',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87),
                       ),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
                           // Total income
                           Container(
                             decoration: BoxDecoration(
-                              // color: Colors.green.withOpacity(0.2),
+                              color: Colors.green.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             padding: const EdgeInsets.all(8.0),
                             // child: const Text(
                             //   'Total Income: \$1000',
-                            //   // style: TextStyle(color: Colors.green),
+                            //   style: TextStyle(color: Colors.green),
                             // ),
                           ),
                           const SizedBox(width: 16),
                           // Total expense
                           Container(
                             decoration: BoxDecoration(
-                              // color: Colors.red.withOpacity(0.2),
+                              color: Colors.red.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             padding: const EdgeInsets.all(8.0),
                             // child: const Text(
                             //   'Total Expense: \$500',
-                            //   // style: TextStyle(color: Colors.red),
+                            //   style: TextStyle(color: Colors.red),
                             // ),
                           ),
                         ],
@@ -166,6 +185,11 @@ class _DashboardPageState extends State<DashboardPage> {
 
             // MONTH clickable card box
             Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              elevation: 5,
+              shadowColor: Colors.black45,
               child: InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, '/month');
@@ -173,18 +197,22 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         'This Month',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87),
                       ),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
                           // Total income
                           Container(
                             decoration: BoxDecoration(
-                              // color: Colors.green.withOpacity(0.2),
+                              color: Colors.green.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             padding: const EdgeInsets.all(8.0),
@@ -197,7 +225,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           // Total expense
                           Container(
                             decoration: BoxDecoration(
-                              // color: Colors.red.withOpacity(0.2),
+                              color: Colors.red.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             padding: const EdgeInsets.all(8.0),
@@ -226,7 +254,7 @@ class _DashboardPageState extends State<DashboardPage> {
             },
           );
         },
-        backgroundColor: const Color(0xFFffc0d9),
+        backgroundColor: const Color(0xFFffc0d9), // Your original theme color
         child: const Icon(Icons.edit),
       ),
     );
@@ -245,6 +273,9 @@ class _EditPocketDialogState extends State<EditPocketDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
       title: const Text('Edit Pocket'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
