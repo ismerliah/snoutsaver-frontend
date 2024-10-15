@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:snoutsaver/bloc/pocket/pocket_bloc.dart';
 import 'package:snoutsaver/bloc/pocket/pocket_event.dart';
@@ -17,6 +18,8 @@ class AllPocketPage extends StatefulWidget {
 class _AllPocketPageState extends State<AllPocketPage> {
   String? imgUrl;
   String? username;
+
+  final storage = const FlutterSecureStorage();
 
   @override
   void initState() {
@@ -177,6 +180,7 @@ class _AllPocketPageState extends State<AllPocketPage> {
                             // Display wallet tiles
                             return GestureDetector(
                               onTap: () {
+                                storage.write(key: 'currentPocket', value: index.toString());
                                 // Navigate to dashboard or handle wallet editing
                                 Navigator.pushNamed(context, '/dashboard');
                               },

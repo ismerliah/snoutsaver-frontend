@@ -1,24 +1,111 @@
-import 'package:flutter/material.dart';
+import 'dart:ffi';
 
-class DashboardPage extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:snoutsaver/repository/pocket_repository.dart';
+import 'package:snoutsaver/repository/user_repository.dart';
+
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  String? imgUrl;
+  String? name;
+
+  final storage = const FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserDetails();
+    _fetchPockets();
+    // context.read<PocketBloc>().add(LoadedPocketsEvent());
+  }
+
+  Future<void> _fetchUserDetails() async {
+    try {
+      final user = await UserRepository().fetchUserDetails();
+      // final token = await storage.read(key: "token");
+      // print('token: $token');
+
+      setState(() {
+        imgUrl = user.profilePicture ?? '';
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<void> _fetchPockets() async {
+    try {
+      final pocket = await PocketRepository().fetchPockets();
+      final currentpocket = int.parse(await storage.read(key: "currentPocket") ?? '0');
+
+      print("currentpocket : $currentpocket");
+      // print('token: $token');
+
+      setState(() {
+        name = pocket[currentpocket].name;
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF8ACDD7),
       appBar: AppBar(
-        title: const Text(
-          'DASHBOARD',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        toolbarHeight: MediaQuery.of(context).size.height * 0.1,
+        title: Text(
+          name ?? '',
+          style: GoogleFonts.outfit(
+            textStyle: const TextStyle(
+                fontSize: 30, color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+        ),
+        leading: IconButton(
+          padding: const EdgeInsets.only(left: 10),
+          icon: const Icon(Icons.arrow_back_ios, size: 30),
+          onPressed: () {
+            storage.delete(key: 'currentPocket');
+            Navigator.pop(context);
+          },
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF8ACDD7),
+        backgroundColor: const Color(0xFFffc0d9),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.pushNamed(context, '/profile');
-            },
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(width: 4, color: const Color(0xFFffca4d)),
+                ),
+                child: ClipOval(
+                  child: imgUrl != null && imgUrl!.isNotEmpty
+                      ? Image.network(
+                          imgUrl!,
+                          fit: BoxFit.cover,
+                        )
+                      : const Icon(Icons.person,
+                          size: 30, color: Color(0xFFffca4d)),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -46,27 +133,27 @@ class DashboardPage extends StatelessWidget {
                           // Total income
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.2),
+                              // color: Colors.green.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             padding: const EdgeInsets.all(8.0),
-                            child: const Text(
-                              'Total Income: \$1000',
-                              style: TextStyle(color: Colors.green),
-                            ),
+                            // child: const Text(
+                            //   'Total Income: \$1000',
+                            //   // style: TextStyle(color: Colors.green),
+                            // ),
                           ),
                           const SizedBox(width: 16),
                           // Total expense
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.red.withOpacity(0.2),
+                              // color: Colors.red.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             padding: const EdgeInsets.all(8.0),
-                            child: const Text(
-                              'Total Expense: \$500',
-                              style: TextStyle(color: Colors.red),
-                            ),
+                            // child: const Text(
+                            //   'Total Expense: \$500',
+                            //   // style: TextStyle(color: Colors.red),
+                            // ),
                           ),
                         ],
                       ),
@@ -97,27 +184,27 @@ class DashboardPage extends StatelessWidget {
                           // Total income
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.2),
+                              // color: Colors.green.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             padding: const EdgeInsets.all(8.0),
-                            child: const Text(
-                              'Total Income: \$5000',
-                              style: TextStyle(color: Colors.green),
-                            ),
+                            // child: const Text(
+                            //   'Total Income: \$5000',
+                            //   style: TextStyle(color: Colors.green),
+                            // ),
                           ),
                           const SizedBox(width: 16),
                           // Total expense
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.red.withOpacity(0.2),
+                              // color: Colors.red.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             padding: const EdgeInsets.all(8.0),
-                            child: const Text(
-                              'Total Expense: \$2000',
-                              style: TextStyle(color: Colors.red),
-                            ),
+                            // child: const Text(
+                            //   'Total Expense: \$2000',
+                            //   style: TextStyle(color: Colors.red),
+                            // ),
                           ),
                         ],
                       ),
@@ -139,7 +226,7 @@ class DashboardPage extends StatelessWidget {
             },
           );
         },
-        backgroundColor: const Color(0xFF8ACDD7),
+        backgroundColor: const Color(0xFFffc0d9),
         child: const Icon(Icons.edit),
       ),
     );
